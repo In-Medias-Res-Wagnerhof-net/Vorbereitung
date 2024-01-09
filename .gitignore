@@ -7,4 +7,5 @@ migrations*
 svalabs*
 deepset*
 HuggingFace*
-bi-electra-ms-marco-german-uncased*
+
+Django/kantwerk/GUI/data/GUI/bi-electra-ms-marco-german-uncased/*
