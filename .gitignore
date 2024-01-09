@@ -1,11 +1,7 @@
 .DS_Store
 
-Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/*
-
-migrations*
+Daten/Kant-Abt1-TEI-vorlaeufig/*
 
 svalabs*
 deepset*
 HuggingFace*
-
-Django/kantwerk/GUI/data/GUI/bi-electra-ms-marco-german-uncased/*
