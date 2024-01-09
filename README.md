@@ -19,16 +19,16 @@ Vollständiges Djangoprojekt mit allen Daten und Modellen, das lauffähig ist. B
 - Alle haben eine Überschrift und eine "Navigation". 
 
 - Es gibt eine Datenbank:
--- Datenbankmodell Suchbegriff mit
---- suchbegriff_text (String mit max. 200 Zeichen): Suchtext für einzelne Suche
---- anzahl (Integer mit Defaultwert 0): Anzahl der Suchaufrufe dieses Suchtextes
---- absatz (String mit max. 7 Zeichen): Absatz, in dem bestes Ergebnis zu finden ist
+    - Modell Suchbegriff mit
+        - suchbegriff_text (String mit max. 200 Zeichen): Suchtext für einzelne Suche
+        - anzahl (Integer mit Defaultwert 0): Anzahl der Suchaufrufe dieses Suchtextes
+        - absatz (String mit max. 7 Zeichen): Absatz, in dem bestes Ergebnis zu finden ist
 
 - Folgende Seiten sind implementiert:
--- Startseite (Index)
--- Dankseite
--- Suchseite
--- Ergebnisseite
+    - Startseite (Index)
+    - Dankseite
+    - Suchseite
+    - Ergebnisseite
 
 ### Startseite
 
@@ -49,12 +49,12 @@ Suchformular zur Eingabe des Suchstrings (200 Zeichen):
 
 Seite zum aufzeigen der Ergebnisse:
 - Der Zielabsatz:
--- wird berechnet falls nötig
--- wird gekennzeichnet, 
--- wird als Anker gesetzt (Sprungpunkt zum Öffnen der Seite)
+    - wird berechnet falls nötig
+    - wird gekennzeichnet, 
+    - wird als Anker gesetzt (Sprungpunkt zum Öffnen der Seite)
 - Zusatzinformationen zum Seitenbeginn:
--- Sucheingabe als Überschrift
--- Angabe des Zielbandes (bisher hardcodiert auf 1)
+    - Sucheingabe als Überschrift
+    - Angabe des Zielbandes (bisher hardcodiert auf 1)
 
 ## Dateien zur Modellerstellung und Datenverarbeitung
 
