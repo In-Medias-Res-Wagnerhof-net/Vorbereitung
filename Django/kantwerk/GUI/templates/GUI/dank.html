@@ -1,0 +1,24 @@
+{# Styles und Javascript #}
+{% load static %}
+<link rel="stylesheet" href="{% static 'GUI/style.css' %}">
+
+{# Header und Navigation #}
+<h1><a href="{% url 'index' %}">In Medias Res</a></h1>
+<hr>
+<div><a href="{% url 'suche' %}">Zur Suche</a></div>
+
+{# Content #}
+<div>
+    {# Dankestext #}
+    <p>Vielen Dank für das Bereitstellen der Daten und Modelle und allen die bei der Entwicklung dieses Projektes geholfen haben. Allen voran:</p>
+    <ul>
+        <li><a href="https://korpora-org.github.io">korpora.org</a> für die Bereitstellung des <a href="http://kant.korpora.org">Kantkorpus</a>.</li>
+        <li><a href="https://www.sva.de/de/solutions/big-data-analytics">SVA</a> für die Erstellung eines vortrainierten deutschen <a href="https://huggingface.co/svalabs/bi-electra-ms-marco-german-uncased">NLP-Modell</a>s.</li>
+        <li>[Weitere Modelle]</li>
+        <li>Dem <a href="https://deutschestextarchiv.de">Deutschen Textarchiv</a> und Bryan Jurish für die Unterstützung mit dem <a href="https://deutschestextarchiv.de/public/cab/">Cascaded Analysis Brocker</a> zur verarbeitung historischer Texte.</li>
+        <li>Meinem universitären Umfeld für viele gute Ratschläge.</li>
+        <li>Meiner Familie, Bekannten, Verwandten und Freunden für ihre generelle (und teilweise auch spezifische) Unterstützung.</li>
+        <li>...</li>
+    </ul>
+    <p>Ohne sie wäre die Umsetzung so nicht möglich gewesen.</p>
+</div>

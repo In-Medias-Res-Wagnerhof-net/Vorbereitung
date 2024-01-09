@@ -1,0 +1,10 @@
+.DS_Store
+
+Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/*
+
+migrations*
+
+svalabs*
+deepset*
+HuggingFace*
+bi-electra-ms-marco-german-uncased*

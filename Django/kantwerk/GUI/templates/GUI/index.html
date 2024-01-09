@@ -1,0 +1,23 @@
+{# Styles und Javascript #}
+{% load static %}
+<link rel="stylesheet" href="{% static 'GUI/style.css' %}">
+
+{# Header und Navigation #}
+<h1><a href="{% url 'index' %}">In Medias Res</a></h1>
+<hr>
+<div><a href="{% url 'suche' %}">Zur Suche</a> <a href="{% url 'dank' %}">Danksagung</a></div>
+
+{# Content #}
+<div>
+    {# Häufigste Suchbegriffe #}
+    <p>Sehen Sie hier die häufigsten bisherigen Suchen:</p>
+    {% if häufigste_begriffe %}
+        <ul>
+            {% for suchbegriff in häufigste_begriffe %}
+                <li><a href="{% url 'ergebnis' suchbegriff.suchbegriff_text %}">{{ suchbegriff.suchbegriff_text }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Es wurden bisher keine Begriffe gesucht.</p>
+    {% endif %}
+</div>

@@ -1,0 +1,24 @@
+{# Styles und Javascript #}
+{% load static %}
+<link rel="stylesheet" href="{% static 'GUI/style.css' %}">
+
+{# Header und Navigation #}
+<h1><a href="{% url 'index' %}">In Medias Res</a></h1>
+<hr>
+<div><a href="{% url 'dank' %}">Danksagung</a></div>
+
+{# Content #}
+<div>
+    {# Suchform #}
+    <form action="{% url 'ergebnisse' %}" method="post">
+        
+        <fieldset>
+            <legend>
+                <h1>Nach was möchten Sie suchen?</h1>
+            </legend>
+            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            <input type="text" id="suchbegriff" name="suchbegriff" value="begriff">
+        </fieldset>
+        <input type="submit" value="Suche starten!">
+    </form>
+</div>

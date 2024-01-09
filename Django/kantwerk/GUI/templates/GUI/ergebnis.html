@@ -1,0 +1,35 @@
+{# Styles und Javascript #}
+{% if anchor %}
+    <script type='text/javascript'>
+        window.location = '#{{ anchor }}';
+        window.onload = init;
+        function init(){
+            var anchor = document.getElementById("{{ anchor }}");
+            anchor.style.padding = "20px";
+            anchor.style.backgroundColor = "black";
+            anchor.style.borderWidth = "5px";
+            anchor.style.borderColor = "white";
+            anchor.style.borderRadius = "10px";
+        }
+    </script>
+{% endif %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'GUI/style.css' %}">
+
+{# Header und Navigation #}
+<h1><a href="{% url 'index' %}">In Medias Res</a></h1>
+<hr>
+<div><a href="{% url 'suche' %}">Zur Suche</a> <a href="{% url 'dank' %}">Danksagung</a></div>
+
+{# Content #}
+<div>
+    {# Erklärung zum Suchbegriff #}
+    <h2>Suchbegriff: {{ begriff }}</h2>
+    <p>Die Sucheingabe ähnelt nach meinen Berechnungen am ehesten Bereichen in Band {{ band }}.</p>
+
+    {# Ergebnistext #}
+    <div id="suchergebnis">
+        {{ text|safe }}
+    </div>
+</div>
