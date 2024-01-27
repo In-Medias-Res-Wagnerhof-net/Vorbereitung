@@ -52,4 +52,36 @@ Es wurden folgende Modelle lokal installiert:
 
 ### .gitignore
 
-Kantkorpus und Modelle (wegen der Größe) werden nicht übertragen.
+Kantkorpus und Modelle (wegen der Größe) werden (vorerst) nicht übertragen.
+
+### Dependencies
+
+Textprozess.py:
+- bs4
+- lxml
+- re
+
+Training.py:
+- Einlesen:
+    - bs4
+    - re
+    - lxml
+- Training
+    - transformers
+    - datasets
+    - trl
+
+Vektoren-Test.py
+- Korpus:
+    - bs4
+    - re
+    - lxml
+- Modell:
+    - sentence_transformers
+    - numpy
+    - sklearn
+
+### TODO
+
+- Überschriftenmanagement?
+- Fremdsprachen rausfiltern
