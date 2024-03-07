@@ -83,5 +83,5 @@ Vektoren-Test.py
 
 ### TODO
 
-- Überschriftenmanagement?
-- Fremdsprachen rausfiltern
+- Überschriftenmanagement (Bei der kompletten Suche?)
+- Fremdsprachen rausfiltern (Bei der kompletten Suche?)

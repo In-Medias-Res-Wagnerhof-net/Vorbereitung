@@ -1,6 +1,18 @@
-### Test der Modelle im Terminal und Erstellung der Vektoren der Bände
+##############################################################################################################
+##############################################################################################################
+###
+###     Test der Modelle im Terminal und Erstellung der Vektoren der Bände
+###
+##############################################################################################################
+##############################################################################################################
 
-## Import externer Bibliotheken
+
+##############################################################################################################
+##
+##      Import externer Bibliotheken
+##
+##############################################################################################################
+
 import re
 from bs4 import BeautifulSoup as bs
 
@@ -8,7 +20,13 @@ from sentence_transformers import SentenceTransformer
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
-## Funktionen
+
+##############################################################################################################
+##
+##      Funktionen
+##
+##############################################################################################################
+
 def ladeTEI (num):
     """
         Gibt Datei als Beautiful Soup Element zurück
@@ -78,7 +96,11 @@ def satzextraktion (data):
     return ret
 
 
-## Programm
+##############################################################################################################
+##
+##      Programm
+##
+##############################################################################################################
 
 # Initialisierungen
 docs = []
@@ -86,12 +108,16 @@ alldocs = []
 
 end = 2                             # Anzahl der Bände max: 10
 K = 10                              # Anzahl der besten Ergebnisse, die aufgelistet werden
-mod = "distilbert-base-german-cased"   # Modell
+mod = "gelectra-large-germanquad-test"   # Modell
 
 if mod == "gelectra-large-germanquad":
     bi_model = SentenceTransformer("Vorbereitung/Modelle/deepset/gelectra-large-germanquad")
+elif mod == "gelectra-large-germanquad-test":
+    bi_model = SentenceTransformer("Vorbereitung/Modelle/deepset/gelectra-large-germanquad-test")
 elif mod == "distilbert-base-german-cased":
     bi_model = SentenceTransformer("Vorbereitung/Modelle/HuggingFace/distilbert-base-german-cased")
+elif mod == "distilbert-base-german-cased-test":
+    bi_model = SentenceTransformer("Vorbereitung/Modelle/HuggingFace/distilbert-base-german-cased-test")
 elif mod == "bi-electra-ms-marco-german-uncased":
     bi_model = SentenceTransformer("Vorbereitung/Modelle/svalabs/bi-electra-ms-marco-german-uncased")
 elif mod == "bi-electra-ms-marco-german-uncased-test":
