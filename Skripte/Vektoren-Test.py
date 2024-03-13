@@ -59,7 +59,7 @@ def ladeTEI (num):
 
 def satzextraktion (data):
     """
-        Gibt Datei als Beautiful Soup Element zurück
+        Gibt alle Elemente mit relevanter ID zurück
         Input: 
             data:   bs4,    Beautiful Soup Element der zu bearbeitenden Datei 
                 ! zu bearbeitende Textstellen sollten bereits mit id-tag ausgezeichnet sein
@@ -96,6 +96,28 @@ def satzextraktion (data):
     return ret
 
 
+def suche_absatz (texte, mapping, absatz):
+    """
+        Gibt den Absatz entsprechend der Id zurück, basierend auf mapping wird zum nächsten Text gesprungen
+        Input: 
+            texte:      Liste,      Liste aller Elemente mit relevanter ID
+            mapping:    Liste,      Angaben, wie viele relevante IDs vergeben wurden (pro Band)
+            absatz:     Integer,    Absatz Id in fortlaufender Form (ohne Bandzusatz)
+        Output:
+            String, Element mit entsprechender ID
+    """
+    # Bei Band eins beginnend hochzählen
+    b = 0
+    for m in mapping:
+        # zu geringe Bände überspringen
+        if absatz > m:
+            absatz -= m
+            b += 1
+        # Entsprechendes Element ausgeben
+        else:
+            return texte[b][absatz]
+
+
 ##############################################################################################################
 ##
 ##      Programm
@@ -106,9 +128,9 @@ def satzextraktion (data):
 docs = []
 alldocs = []
 
-end = 2                             # Anzahl der Bände max: 10
-K = 10                              # Anzahl der besten Ergebnisse, die aufgelistet werden
-mod = "gelectra-large-germanquad-test"   # Modell
+end = 10                                    # Anzahl der Bände max: 10
+K = 10                                      # Anzahl der besten Ergebnisse, die aufgelistet werden
+mod = "bi-electra-ms-marco-german-uncased"  # Modell
 
 if mod == "gelectra-large-germanquad":
     bi_model = SentenceTransformer("Vorbereitung/Modelle/deepset/gelectra-large-germanquad")
@@ -128,6 +150,7 @@ else:
 
 # Einlesen der Daten und Vorbereitung
 print("Lese Datei")
+docs = []
 for i in range(1,end):
 
     tei = ladeTEI(i)
@@ -190,6 +213,16 @@ for i in range(1,end):
 # Ergebnis
 print("Bitte geben Sie einen Suchbegriff ein oder beenden Sie mit 'exit'!")
 inp = input()
+
+# mapping laden
+f = open("Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/mapping.txt")
+mapping = f.read().split("\n")
+f.close()
+for m in range(len(mapping)):
+    mapping[m] = int(mapping[m])
+
+
+# Bearbeitung der Abfragen
 while( inp != "exit" ):
     
     queries = [
@@ -207,7 +240,7 @@ while( inp != "exit" ):
         print(sim[0,0])
         print("Query:", query)
         for j, r in enumerate(ranks[:K]):
-            print(f"[{j}: {sim[i, r]: .3f}]", docs[r])
+            print(f"[{j}: {sim[i, r]: .3f}]", suche_absatz(alldocs, mapping, r-1))
         print("-"*96)
 
     print("Bitte geben Sie einen neuen Suchbegriff ein oder beenden Sie mit 'exit'!")

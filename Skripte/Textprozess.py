@@ -1,7 +1,7 @@
 ##############################################################################################################
 ##############################################################################################################
 ###
-###     Absatzweise Markierung der Daten mit id
+###     Absatzweise Markierung der Daten mit ID
 ###
 ##############################################################################################################
 ##############################################################################################################
@@ -23,7 +23,7 @@ import re
 ##
 ##############################################################################################################
 
-def satzextraktion (data, z):
+def satzextraktion (data, band, z):
     """
         Unterteilung der Daten in Absätze und Auszeichnung dieser mit einer ID
         Input: 
@@ -44,7 +44,7 @@ def satzextraktion (data, z):
         t = re.sub("\s+", " ", t)
         t = t.strip()
         if not t == " " and not t == "":
-            data['id'] = z
+            data['id'] = str(band) + "." + str(z)
             z += 1
     # Verzweigungen auflösen
     else:
@@ -52,7 +52,7 @@ def satzextraktion (data, z):
         if "<p>" in temp or "<h1>" in temp or "<h2>" in temp or "<h3>" in temp or "<h4>" in temp or "<h5>" in temp:
             for t in data.children:
                 if t != data:
-                    t, z = satzextraktion (t, z)
+                    t, z = satzextraktion (t, band, z)
         #print(data)
         return data, z
     
@@ -65,14 +65,14 @@ def satzextraktion (data, z):
         t = t.strip()
         if not t == " " and not t == "":
             x = str(data)
-            x = re.sub(r'^(\s*)(.*?)(\s*)$', r"\1<p id='" + str(z) + r"'>\2</p>\3", x, flags=re.DOTALL)
+            x = re.sub(r'^(\s*)(.*?)(\s*)$', r"\1<p id='" + str(band) + "." + str(z) + r"'>\2</p>\3", x, flags=re.DOTALL)
             data.string.replace_with(x)
             z += 1
         return data, z
     return data, z
 
 
-def strukturiereDIV(data, z = 1):
+def strukturiereDIV(data, band, z = 1):
     """
         DIVs untersuchen und Absätze mit ID versehen
         Input: 
@@ -91,11 +91,11 @@ def strukturiereDIV(data, z = 1):
     for child in data: 
         # Grabe tiefer in div-Elementen
         if child.name == "div" and child.has_attr("n"):
-            child, z = strukturiereDIV(child, z)
+            child, z = strukturiereDIV(child, band, z)
         # Setze ansonsten ids
         else:
             #print(child)
-            child, z = satzextraktion(child, z)
+            child, z = satzextraktion(child, band, z)
 
     return data, z
 
@@ -107,35 +107,38 @@ def strukturiereDIV(data, z = 1):
 ##############################################################################################################
 
 # Datei einlesen
-band = 1
-pfad = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/original/" + str(band) + ".xml"
-f = open(pfad)
-tei = f.read()
-data = bs(tei, 'xml')
-f.close()
+for i in range(1,10):
+    pfad = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/original/" + str(i) + ".xml"
+    f = open(pfad)
+    tei = f.read()
+    if i == 3 or i == 9:
+        tei = re.sub(r"<tei:(.*?)>", r"<\1>", tei)
+        tei = re.sub(r"</tei:(.*?)>", r"</\1>", tei)
+    data = bs(tei, 'xml')
+    f.close()
 
-# Datei bereinigen
-for pb in data.find_all("pb"):
-    pb.decompose()
-for lb in data.find_all("lb"):
-    lb.decompose()
+    # Datei bereinigen
+    for pb in data.find_all("pb"):
+        pb.decompose()
+    for lb in data.find_all("lb"):
+        lb.decompose()
 
-# Überschriften auszeichnen
-for chapter in data.find_all(n="3"):
-    for h in chapter.find_all("head"):
-        h.name = "h5"
-for chapter in data.find_all(n="2"):
-    for h in chapter.find_all("head"):
-        h.name = "h4"
-for chapter in data.find_all(n="1"):
-    for h in chapter.find_all("head"):
-        h.name = "h3"
+    # Überschriften auszeichnen
+    for chapter in data.find_all(n="3"):
+        for h in chapter.find_all("head"):
+            h.name = "h5"
+    for chapter in data.find_all(n="2"):
+        for h in chapter.find_all("head"):
+            h.name = "h4"
+    for chapter in data.find_all(n="1"):
+        for h in chapter.find_all("head"):
+            h.name = "h3"
 
-# Absätze markieren
-data.body, z = strukturiereDIV(data.body)
-#print(z)
+    # Absätze markieren
+    data.body, z = strukturiereDIV(data.body, i)
+    #print(z)
 
-# Datei speichern
-f = open("Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/bearbeitet/" + str(band) + "_out.xml", "a")
-f.write(data.prettify(formatter=None))
-f.close()
+    # Datei speichern
+    f = open("Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/bearbeitet/" + str(i) + "_out.xml", "a")
+    f.write(data.prettify(formatter=None))
+    f.close()
