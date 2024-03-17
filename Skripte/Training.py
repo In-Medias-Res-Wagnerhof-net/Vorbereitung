@@ -19,6 +19,7 @@ from bs4 import BeautifulSoup as bs
 from transformers import TrainingArguments, AutoModelForMaskedLM, AutoTokenizer, DataCollatorForLanguageModeling, Trainer
 from datasets import Dataset, load_dataset
 #from trl import SFTTrainer
+import spacy
 
 
 ##############################################################################################################
@@ -37,16 +38,12 @@ def ladeTEI (num):
                 ! Gibt es keinen Treffer, wird nur eine Fehlermeldung auf der Konsole ausgegeben
     """
     # Initialisierungen
-    pfad = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/bearbeitet/" + str(num) + "_out.xml"
+    pfad = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/normalized/bearbeitet/" + str(num) + "_out.xml"
 
     # Versuche Datei zu öffnen
     try:
         f = open(pfad)
         tei = f.read()
-        # Tags anpassen in Dateien 3 und 9 
-        if num == 3 or num == 9:
-            tei = re.sub(r"<tei:(.*?)>", r"<\1>", tei)
-            tei = re.sub(r"</tei:(.*?)>", r"</\1>", tei)
         data = bs(tei, 'xml')
         f.close()
     # ... ansonsten: gebe Fehlermeldung aus
@@ -97,7 +94,7 @@ def satzextraktion (data):
             print(inh.name)
         
         
-    return ret
+    return ret, str
 
 
 ##############################################################################################################
@@ -108,15 +105,13 @@ def satzextraktion (data):
 
 #Initialisierung
 ps = satzextraktion(ladeTEI(2))
-#p = ps[:10]
-#print(p)
-
 dictlist = []
 li = []
 block_size = 128
 z = 0
+
 # Modell laden
-mod = "distilbert"
+mod = "bielectra"
 
 if mod == "gelectra":
     model = AutoModelForMaskedLM.from_pretrained("Vorbereitung/Modelle/deepset/gelectra-large-germanquad")
@@ -134,49 +129,47 @@ else:
     print("Es gab ein Problem beim Laden des Modells...")
     exit()
 
-text = ""
-"""
-'''
-# Trainingsdaten erstellen
-for p in ps:
-    if len(re.split(" ", p))<200 and len(re.split(" ", p))>5:
-        li.append(p)
-        dictlist.append({"text": p})
-        z += 1
-    elif len(re.split(" ", p))>=200:
-        sep = ".!?"
-        t = ""
-        i = ""
-        j = ""
-        for b in p:
-            if b in sep and not (b in "." and j in " "):
-                t += b
-                if len(re.split(" ", t))>5:
-                    li.append(t)
-                    dictlist.append({"text": t})
-                    t = ""
-                    z += 1
-                else:
-                    t = ""
-            else:
-                t += b
-            j = i
-            i = b
-    if z > 10:
-        break
-'''
-text = " ".join(ps)
+# Daten laden
+p_d = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/normalized/bearbeitet/"
+strdata = ""
+df = []
+for i in range(1,10):
+    df.append(p_d + str(i) + "_string.txt")
+    f = open(p_d + str(i) + "_string.txt")
+    strdata += f.read()
+    f.close()
 
-f = open("Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/bearbeitet/2_string.txt", "a")
-f.write(text)
-f.close()
-"""
-
-
-dataset = load_dataset("text", data_files=["Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/bearbeitet/1_string.txt", "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/bearbeitet/2_string.txt"])
-print(dataset)
+dataset = load_dataset("text", data_files=df)
+print(df)
 #dataset = Dataset.from_list(dictlist, split="train[:5000]")
 
+# Vokabeln herausfinden und erweitern
+nlp = spacy.blank("de") 
+nlp.max_length = 9000000
+doc = nlp(strdata, disable=['parser', 'tagger', 'ner'])
+tokens = {}
+for word in doc:
+    if word.text in tokens:
+        tokens[word.text] += 1
+    else:
+        tokens[word.text] = 1
+
+adto =[]
+for w in sorted(tokens, key=tokens.get, reverse=True):
+    if tokens[w] > 5 and tokens[w] < 1930:
+        if w not in adto:
+            adto.append(w)
+
+print(len(tokenizer))
+num = tokenizer.add_tokens(adto)
+print(num)
+print(len(tokenizer))
+
+#Distilbert/Gelectra: 31102/10527/37117 | Bielectra: 32767/10527/40405
+
+model.resize_token_embeddings(len(tokenizer))
+
+# Tokenisierung
 def preprocess_function(examples):
      return tokenizer(examples["text"])
             
@@ -231,6 +224,8 @@ trainer.train()
 # Modell speichern
 trainer.save_model(o)
 
+
+"""
 '''
 #print(z)
 #print(li[100:105])
@@ -270,3 +265,5 @@ trainer.save_model(o)
 
 
 '''
+
+"""
