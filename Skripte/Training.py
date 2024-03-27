@@ -82,16 +82,16 @@ else:
     exit()
 
 # Daten laden
-p_d = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/normalized/plaintext/"
+if mod == "bielectra":
+    p_d = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/normalized/plaintext_lower/"
+else:
+    p_d = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/normalized/plaintext/"
 strdata = ""
 df = []
 for i in range(1,10):
     df.append(p_d + str(i) + "_string.txt")
     f = open(p_d + str(i) + "_string.txt")
-    if mod == "bielectra":
-        strdata += f.read().lower()
-    else:
-        strdata += f.read()
+    strdata += f.read()
     f.close()
 
 dataset = load_dataset("text", data_files=df)

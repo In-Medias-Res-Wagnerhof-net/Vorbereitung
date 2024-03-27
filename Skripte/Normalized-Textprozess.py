@@ -263,4 +263,10 @@ for i in range(1,10):
     f.write(text)
     f.close()
 
+    # Plaintextdatei mit lower() erstellen
+    text = text.lower()
+    f = open("Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/normalized/plaintext_lower/" + str(i) + "_string.txt", "a")
+    f.write(text)
+    f.close()
+
     
