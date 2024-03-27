@@ -147,8 +147,31 @@ def erstelle_plaintext (data):
             print("Es gab ein Problem mit den Inhalten eines Tags mit ID. Sie hat nicht das geforderte Format (h1-5 oder p):")
             print(inh.name)
         
-        
     return ret
+
+def lösche_kinder(data, tagname):
+    """
+        Lösche alle Kindknoten, die in tagname enthalten sind
+        Input: 
+            data:       bs4,    Beautiful Soup Element, dessen Kindknoten gelöscht werden sollen
+            tagname:    list,   Liste mit zu löschenden Tag-Namen
+        Output:
+            bs4.element,    Beautiful Soup Element ohne Tag-Elemente, die in tagname enthalten sind
+    """
+    # alle Kindelemente durchgehen
+    for c in data.children:
+        # Falls es ein entsprechender Tag ist, lösche ihn...
+        if c.name in tagname:
+            c.decompose()
+        # ... ansonsten: versuche weitere Kindknoten ausfindig zu machen und rufe gegebenenfalls Funktion rekursiv selbst auf 
+        else:
+            try:
+                if len(c.contents) > 0:
+                    lösche_kinder(c, tagname)
+            except:
+                None
+    
+    return data
 
 
 ##############################################################################################################
@@ -157,20 +180,15 @@ def erstelle_plaintext (data):
 ##
 ##############################################################################################################
 
-# Datei einlesen
+# Alle Dateien durchgehen
 for i in range(1,10):
-    pfad = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/normalized/" + str(i) + ".xml"
+    # Datei einlesen
+    pfad = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/normalized/bearbeitet/" + str(i) + "_pre.txt"
     f = open(pfad)
     tei = f.read()
-    if i == 3 or i == 9:
-        tei = re.sub(r"<tei:(.*?)>", r"<\1>", tei)
-        tei = re.sub(r"</tei:(.*?)>", r"</\1>", tei)
+    f.close()
 
-    tei = re.sub(r"<w.*?norm=\"(.*?)\".*?</w>", r"\1", tei, flags=re.DOTALL)
-    tei = re.sub(r"<s xml:id=\".*?\">(.*?)</s>", r"\1", tei, flags=re.DOTALL)
-    tei = re.sub(r"<note.*?</note>", r"", tei, flags=re.DOTALL)
-    tei = re.sub(r"<ref.*?</ref>", r"", tei, flags=re.DOTALL)
-
+    # Abkürzungen auflösen
     tei = re.sub(r"u\.\s*?s\.\s*?w\.", r"und so weiter", tei)
     tei = re.sub(r"u\.\s*?s\.\s*?f\.", r"und so fort", tei)
     tei = re.sub(r"u\.\s*?d\.\s*?g\.", r"und dergleichen", tei)
@@ -209,14 +227,8 @@ for i in range(1,10):
 
     tei = re.sub(r"\s+", r" ", tei, flags=re.DOTALL)
 
+    # Datei in Beautiful Soup auflösen
     data = bs(tei, 'xml')
-    f.close()
-
-    # Datei bereinigen
-    for pb in data.find_all("pb"):
-        pb.decompose()
-    for lb in data.find_all("lb"):
-        lb.decompose()
 
     # Überschriften auszeichnen
     for chapter in data.find_all(n="3"):
@@ -232,15 +244,22 @@ for i in range(1,10):
     # Absätze markieren
     data.body, z = strukturiereDIV(data.body, i)
 
+    # Datei bereinigen
+    for tid in data.find_all(id=True):
+        tid = lösche_kinder(tid, ["note", "ref"])
+    for pb in data.find_all("pb"):
+        pb.decompose()
+    for lb in data.find_all("lb"):
+        lb.decompose()
+
     # Datei speichern
-    f = open("Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/normalized/bearbeitet/" + str(i) + "_out.xml", "a")
+    f = open("Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/normalized/mitID/" + str(i) + "_out.xml", "a")
     f.write(data.prettify(formatter=None))
     f.close()
 
     # Plaintextdatei erstellen
-    data.find(type = "footnotes").decompose()
     text = erstelle_plaintext(data)
-    f = open("Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/normalized/bearbeitet/" + str(i) + "_string.txt", "a")
+    f = open("Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/normalized/plaintext/" + str(i) + "_string.txt", "a")
     f.write(text)
     f.close()
 

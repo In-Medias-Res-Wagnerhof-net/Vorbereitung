@@ -108,12 +108,9 @@ def strukturiereDIV(data, band, z = 1):
 
 # Datei einlesen
 for i in range(1,10):
-    pfad = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/original/" + str(i) + ".xml"
+    pfad = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/original/bearbeitet/" + str(i) + "_pre.txt"
     f = open(pfad)
     tei = f.read()
-    if i == 3 or i == 9:
-        tei = re.sub(r"<tei:(.*?)>", r"<\1>", tei)
-        tei = re.sub(r"</tei:(.*?)>", r"</\1>", tei)
     data = bs(tei, 'xml')
     f.close()
 
@@ -139,6 +136,6 @@ for i in range(1,10):
     #print(z)
 
     # Datei speichern
-    f = open("Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/bearbeitet/" + str(i) + "_out.xml", "a")
+    f = open("Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/original/mitID/" + str(i) + "_out.xml", "a")
     f.write(data.prettify(formatter=None))
     f.close()

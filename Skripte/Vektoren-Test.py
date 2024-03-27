@@ -37,16 +37,12 @@ def ladeTEI (num):
                 ! Gibt es keinen Treffer, wird nur eine Fehlermeldung auf der Konsole ausgegeben
     """
     # Initialisierungen
-    pfad = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/bearbeitet/" + str(num) + "_out.xml"
+    pfad = "Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/normalized/mitID/" + str(num) + "_out.xml"
 
     # Versuche Datei zu öffnen
     try:
         f = open(pfad)
         tei = f.read()
-        # Tags anpassen in Dateien 3 und 9 
-        if num == 3 or num == 9:
-            tei = re.sub(r"<tei:(.*?)>", r"<\1>", tei)
-            tei = re.sub(r"</tei:(.*?)>", r"</\1>", tei)
         data = bs(tei, 'xml')
         f.close()
     # ... ansonsten: gebe Fehlermeldung aus
@@ -110,12 +106,12 @@ def suche_absatz (texte, mapping, absatz):
     b = 0
     for m in mapping:
         # zu geringe Bände überspringen
-        if absatz > m:
+        if absatz > m-1:
             absatz -= m
             b += 1
         # Entsprechendes Element ausgeben
         else:
-            return texte[b][absatz]
+            return texte[b][absatz], str(b + 1) + "." + str(absatz + 1)
 
 
 ##############################################################################################################
@@ -127,10 +123,11 @@ def suche_absatz (texte, mapping, absatz):
 # Initialisierungen
 docs = []
 alldocs = []
+mapping = []
 
 end = 10                                    # Anzahl der Bände max: 10
 K = 10                                      # Anzahl der besten Ergebnisse, die aufgelistet werden
-mod = "bi-electra-ms-marco-german-uncased"  # Modell
+mod = "bi-electra-ms-marco-german-uncased-test"  # Modell
 
 if mod == "gelectra-large-germanquad":
     bi_model = SentenceTransformer("Vorbereitung/Modelle/deepset/gelectra-large-germanquad")
@@ -152,19 +149,13 @@ else:
 print("Lese Datei")
 docs = []
 for i in range(1,end):
-
+    # Einlesen und laden der Absätze
     tei = ladeTEI(i)
-    #print(tei)
-
-
     docs = satzextraktion(tei)
 
-    #print("****")
+    # geschachtelte Liste und Mapping erstellen
     alldocs.append(docs)
-
-    #print(docs[0:44])
-    #print(len(docs))
-
+    mapping.append(len(docs))
 
 
 '''
@@ -214,14 +205,6 @@ for i in range(1,end):
 print("Bitte geben Sie einen Suchbegriff ein oder beenden Sie mit 'exit'!")
 inp = input()
 
-# mapping laden
-f = open("Vorbereitung/Daten/Kant-Abt1-TEI-vorlaeufig/mapping.txt")
-mapping = f.read().split("\n")
-f.close()
-for m in range(len(mapping)):
-    mapping[m] = int(mapping[m])
-
-
 # Bearbeitung der Abfragen
 while( inp != "exit" ):
     
@@ -240,7 +223,10 @@ while( inp != "exit" ):
         print(sim[0,0])
         print("Query:", query)
         for j, r in enumerate(ranks[:K]):
-            print(f"[{j}: {sim[i, r]: .3f}]", suche_absatz(alldocs, mapping, r-1))
+            print(r)
+            abs, eid = suche_absatz(alldocs, mapping, r)
+            print(eid)
+            print(f"[{j}: {sim[i, r]: .3f}]", abs)
         print("-"*96)
 
     print("Bitte geben Sie einen neuen Suchbegriff ein oder beenden Sie mit 'exit'!")
