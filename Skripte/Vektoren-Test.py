@@ -65,6 +65,7 @@ def satzextraktion (data):
     """
     # Initialisierungen
     ret = []
+    retl = []
 
     # Lese alle Tags mit id aus
     for inh in data.find_all(id=True):
@@ -84,12 +85,13 @@ def satzextraktion (data):
             # Nichtleere Strings werden aufgenommen (leere Strings sollten eigentlich nicht vorkommen)
             if not t == " " and not t == "":
                     ret.append(t)
+                    retl.append(t.lower())
         # ... ansonsten: Probleme aufzeigen
         else:
             print("Es gab ein Problem mit den Inhalten eines Tags mit id. Sie hat nicht das geforderte Format (h1-5 oder p):")
             print(inh.name)
         
-    return ret
+    return ret, retl
 
 
 def suche_absatz (texte, mapping, absatz):
@@ -123,24 +125,33 @@ def suche_absatz (texte, mapping, absatz):
 # Initialisierungen
 docs = []
 alldocs = []
+alldocs_l = []
 mapping = []
 
 end = 10                                    # Anzahl der Bände max: 10
 K = 10                                      # Anzahl der besten Ergebnisse, die aufgelistet werden
-mod = "bi-electra-ms-marco-german-uncased-test"  # Modell
+mod = "bi-electra-tsdae"  # Modell
 
-if mod == "gelectra-large-germanquad":
+if mod == "gelectra":
     bi_model = SentenceTransformer("Vorbereitung/Modelle/deepset/gelectra-large-germanquad")
-elif mod == "gelectra-large-germanquad-test":
+elif mod == "gelectra-test":
     bi_model = SentenceTransformer("Vorbereitung/Modelle/deepset/gelectra-large-germanquad-test")
-elif mod == "distilbert-base-german-cased":
-    bi_model = SentenceTransformer("Vorbereitung/Modelle/HuggingFace/distilbert-base-german-cased")
-elif mod == "distilbert-base-german-cased-test":
-    bi_model = SentenceTransformer("Vorbereitung/Modelle/HuggingFace/distilbert-base-german-cased-test")
-elif mod == "bi-electra-ms-marco-german-uncased":
+elif mod == "gelectra-temp":
+    bi_model = SentenceTransformer("Vorbereitung/Modelle/deepset/gelectra-large-germanquad-test/checkpoint-14000")
+elif mod == "convbert":
+    bi_model = SentenceTransformer("Vorbereitung/Modelle/dbmdz/convbert-base-german-europeana-cased")
+elif mod == "convbert-test":
+    bi_model = SentenceTransformer("Vorbereitung/Modelle/dbmdz/convbert-base-german-europeana-cased-test")
+elif mod == "distilbert":
+    bi_model = SentenceTransformer("Vorbereitung/Modelle/dbmdz/distilbert-base-german-europeana-cased")
+elif mod == "distilbert-test":
+    bi_model = SentenceTransformer("Vorbereitung/Modelle/dbmdz/distilbert-base-german-europeana-cased-test")
+elif mod == "bi-electra":
     bi_model = SentenceTransformer("Vorbereitung/Modelle/svalabs/bi-electra-ms-marco-german-uncased")
-elif mod == "bi-electra-ms-marco-german-uncased-test":
+elif mod == "bi-electra-test":
     bi_model = SentenceTransformer("Vorbereitung/Modelle/svalabs/bi-electra-ms-marco-german-uncased-test")
+elif mod == "bi-electra-tsdae":
+    bi_model = SentenceTransformer("Vorbereitung/Modelle/svalabs/bi-electra-ms-marco-german-uncased-tsdae")
 else:
     print("Es gab ein Problem beim Laden des Modells...")
     exit()
@@ -151,10 +162,11 @@ docs = []
 for i in range(1,end):
     # Einlesen und laden der Absätze
     tei = ladeTEI(i)
-    docs = satzextraktion(tei)
+    docs, low = satzextraktion(tei)
 
     # geschachtelte Liste und Mapping erstellen
     alldocs.append(docs)
+    alldocs_l.append(low)
     mapping.append(len(docs))
 
 
@@ -192,7 +204,10 @@ for i in range(1,end):
     # ... ansonsten: Erstelle Vektoren
     except IOError:
         print("Model wird erstellt")
-        model = bi_model.encode(alldocs[i-1])
+        if "bi-electra" in mod:
+            model = bi_model.encode(alldocs_l[i-1])
+        else:
+            model = bi_model.encode(alldocs[i-1])
         if i == 1:
             features_docs = model
         else:
@@ -204,6 +219,8 @@ for i in range(1,end):
 # Ergebnis
 print("Bitte geben Sie einen Suchbegriff ein oder beenden Sie mit 'exit'!")
 inp = input()
+if "bi-electra" in mod:
+    inp = inp.lower()
 
 # Bearbeitung der Abfragen
 while( inp != "exit" ):
