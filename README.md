@@ -9,10 +9,10 @@ Die Webseite mit der implementierten Suche ist unter folgendem Link zu finden:
 
 Enthalten sind:
 
-- **[Inhalte des Repositoriums](#-aufbau-des-repositoriums)**: Dateien zur Modellerstellung und Datenverarbeitung
-- **[HowTo](#-howto)**: Erklärung, wie das Repositorium genutzt werden kann und wie die unten genannten Ergebnisse erzielt wurden
-- **[Ergebnisse](#-ergebnisse)**: Ergebnisse, wie gut/schlecht die Modelle abschneiden
-- **[Trivia](#-trivia)**: Sonstige Informationen
+- **[Inhalte des Repositoriums](#aufbau-des-repositoriums)**: Dateien zur Modellerstellung und Datenverarbeitung
+- **[HowTo](#howto)**: Erklärung, wie das Repositorium genutzt werden kann und wie die unten genannten Ergebnisse erzielt wurden
+- **[Ergebnisse](#ergebnisse)**: Ergebnisse, wie gut/schlecht die Modelle abschneiden
+- **[Trivia](#trivia)**: Sonstige Informationen
 
 
 ---
@@ -63,9 +63,9 @@ Dieses Repositorium stellt alle Handwerkszeuge für die Aufbereitung des Korpus,
 Grundsätzlich wurde versucht die Implementierung der Suche möglicht so zu gestalten, dass zumindest einzelne Funktionen oder vielleicht sogar ganze Programmteile auch für andere Projekte nutzbar sind. Jedoch ist jeder Korpus anders, sodass vor allem die Aufbereitung dessen nicht verallgemeinbar ist. Umso wichtiger ist die Dokumentation, in welcher Form die Daten vorliegen müssen um mit den restlichen Funktionen zusammen arbeiten zu können. So soll es möglich sein bereits aufbereitete Modelle zum Beispiel einfach zu benutzen um die Modelle zu trainieren, oder mit den eigenen trainierten Modellen oder auch Modellen anderer Institutionen darin zu suchen. Das eigene Modell mit den hier genutzten Daten zu trainieren ist leider momentan nicht möglich, wenden Sie sich dazu gerne an die [Herausgeber des online-Kantkorpus](http://kant.korpora.org).
 
 Je nach Vorhaben kann direkt zu den entsprechenden Kapiteln gesprungen werden:
-- **[Vorbereitung der Daten](#-vorbereitung-der-daten)**: In dieser Sektion wird die hier durchgeführte Bereinigung der Daten und die Aufbereitung der drei notwendigen Formen der Daten aufgezeigt.
-- **[Training der Modelle](#-training-der-modelle)**: Hier wird das (weitere) Training der Modelle implementiert.
-- **[Implementierung der Suche](#-implementierung-der-suche)**: Hier ist der Quellcode um lokal eine Suche zu implementieren sowie die zugehörige Erklärung.
+- **[Vorbereitung der Daten](#vorbereitung-der-daten)**: In dieser Sektion wird die hier durchgeführte Bereinigung der Daten und die Aufbereitung der drei notwendigen Formen der Daten aufgezeigt.
+- **[Training der Modelle](#training-der-modelle)**: Hier wird das (weitere) Training der Modelle implementiert.
+- **[Implementierung der Suche](#implementierung-der-suche)**: Hier ist der Quellcode um lokal eine Suche zu implementieren sowie die zugehörige Erklärung.
 
 ### Vorbereitung der Daten
 
