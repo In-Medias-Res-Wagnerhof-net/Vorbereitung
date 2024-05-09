@@ -14,7 +14,7 @@
 ##############################################################################################################
 
 from bs4 import BeautifulSoup as bs
-from Textprozess_functions import öffne_Datei, speichere, anpassen, abkürzungen_auflösen, strukturiereDIV, lösche_kinder, erstelle_plaintext
+from Textprozess_functions import *
 
 ##############################################################################################################
 ##
@@ -30,8 +30,10 @@ pfadn = "../In Medias Res/Vorbereitung/Daten/Kant/normalized/"
 pfadt = "../In Medias Res/Vorbereitung/Daten/Kant/training/"
 
 # Ergebnisvariablen initialisieren
+ges = ""
 train = ""
 eval = ""
+sentg = ""
 sentt = ""
 sente = ""
 
@@ -55,7 +57,7 @@ for i in range(1,10):
     ## Original
     # Datei anpassen und auflösen
     odata = bs(
-        anpassen(orig, i, True, True), 
+        anpassen(orig, i, False, False), 
         'xml'
     )
     # Absätze markieren
@@ -94,9 +96,10 @@ for i in range(1,10):
     ## Absatzweise
     # Datei anpassen und zwischenspeichern
     if train == "" and eval == "":
-        train, eval = erstelle_plaintext(data)
+        ges, train, eval = erstelle_plaintext(data)
     else:
-        tempt, tempe = erstelle_plaintext(data, True)
+        tempg, tempt, tempe = erstelle_plaintext(data, True)
+        ges += tempg
         train += tempt
         eval += tempe
 
@@ -112,22 +115,27 @@ for i in range(1,10):
             ["note", "ref"] 
         )
     
-    if sentt == "" and sente == "":
-        sentt, sente = erstelle_plaintext(data, teiler="s")
+    if sentg == "" and sentt == "" and sente == "":
+        sentg, sentt, sente = erstelle_plaintext(data, teiler="s")
     else:
-        tempt, tempe = erstelle_plaintext(data, True, teiler="s")
+        tempg, tempt, tempe = erstelle_plaintext(data, True, teiler="s")
+        sentg += tempg
         sentt += tempt
         sente += tempe
       
 
 # Plaintextdateien erstellen
+speichere(pfadt + "absatzweise.txt", ges)
 speichere(pfadt + "train_absatzweise.txt", train)
 speichere(pfadt + "eval_absatzweise.txt", eval)
+speichere(pfadt + "satzweise.txt", sentg)
 speichere(pfadt + "train_satzweise.txt", sentt)
 speichere(pfadt + "eval_satzweise.txt", sente)
 
 # Plaintextdateien mit lower() erstellen
+speichere(pfadt + "absatzweise_lower.txt", ges.lower())
 speichere(pfadt + "train_absatzweise_lower.txt", train.lower())
 speichere(pfadt + "eval_absatzweise_lower.txt", eval.lower())
+speichere(pfadt + "satzweise_lower.txt", sentg.lower())
 speichere(pfadt + "train_satzweise_lower.txt", sentt.lower())
 speichere(pfadt + "eval_satzweise_lower.txt", sentt.lower())

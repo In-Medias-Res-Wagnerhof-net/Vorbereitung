@@ -67,7 +67,7 @@ def speichere(pfad: str, inhalt: str, form = "w"):
 '''
     2. Vorbereitung
 '''
-def anpassen(tei: str, band: int, satzteilung: bool = True, wortteilung : bool = True):
+def anpassen(tei: str, band: int, satzteilung: bool = True, wortteilung: bool = True):
     '''
         Bereinige die Datei in grundsätzlicher Hinsicht:
             Namespaces angleichen, 
@@ -89,7 +89,7 @@ def anpassen(tei: str, band: int, satzteilung: bool = True, wortteilung : bool =
     # Zusätze aus dem Normalizer gegebenenfalls entfernen
     # Wortzusätze
     if wortteilung:
-        # inhaltsleere Elemente
+        # inhaltsleere Elemente löschen
         tei = re.sub(r"<w([^>]*?)/>", r"", tei, flags=re.DOTALL)
         # Elemente mit schließendem Tag
         def w_auflösen(matchobj):
@@ -122,15 +122,33 @@ def anpassen(tei: str, band: int, satzteilung: bool = True, wortteilung : bool =
         lb.decompose()
 
     # Überschriften auszeichnen
-    for chapter in data.find_all(n="3"):
+    for chapter in data.find_all(n="9"):
+        for h in chapter.find_all("head"):
+            h.name = "h9"
+    for chapter in data.find_all(n="8"):
+        for h in chapter.find_all("head"):
+            h.name = "h8"
+    for chapter in data.find_all(n="7"):
+        for h in chapter.find_all("head"):
+            h.name = "h7"
+    for chapter in data.find_all(n="6"):
+        for h in chapter.find_all("head"):
+            h.name = "h6"
+    for chapter in data.find_all(n="5"):
         for h in chapter.find_all("head"):
             h.name = "h5"
-    for chapter in data.find_all(n="2"):
+    for chapter in data.find_all(n="4"):
         for h in chapter.find_all("head"):
             h.name = "h4"
-    for chapter in data.find_all(n="1"):
+    for chapter in data.find_all(n="3"):
         for h in chapter.find_all("head"):
             h.name = "h3"
+    for chapter in data.find_all(n="2"):
+        for h in chapter.find_all("head"):
+            h.name = "h2"
+    for chapter in data.find_all(n="1"):
+        for h in chapter.find_all("head"):
+            h.name = "h1"
     
     return str(data)
 
@@ -245,7 +263,8 @@ def satzextraktion (data: bs4.element, band: int, z: int):
         return data, z
     
     # p- & h-tags mit id auszeichnen
-    if data.name == "h1" or data.name == "h2" or data.name == "h3" or data.name == "h4" or data.name == "h5" or data.name == "p":
+    h = ["h1", "h2", "h3", "h4", "h5", "h6", "h7", "h8", "h9"]
+    if data.name in h or data.name == "p":
         # Bereinigen
         t = str(data)
         t = re.sub("<(.*?)>", "", t, flags=re.DOTALL)
@@ -259,7 +278,7 @@ def satzextraktion (data: bs4.element, band: int, z: int):
     # Verzweigungen auflösen
     else:
         temp = str(data)
-        if "<p>" in temp or "<h1>" in temp or "<h2>" in temp or "<h3>" in temp or "<h4>" in temp or "<h5>" in temp:
+        if "<p>" in temp or "<h1>" in temp or "<h2>" in temp or "<h3>" in temp or "<h4>" in temp or "<h5>" in temp or "<h6>" in temp or "<h7>" in temp or "<h8>" in temp or "<h9>" in temp:
             for t in data.children:
                 if t != data:
                     t, z = satzextraktion (t, band, z)
@@ -307,16 +326,20 @@ def erstelle_plaintext (data: bs4.element, nl: bool = False, teiler: str = None)
         Input: 
             data:   bs4,        Beautiful Soup Element der zu bearbeitenden Datei 
             nl:     Boolean,    Angabe, ob ein Zeilenumbruch vor den Ausgabestring gesetzt werden soll
+            teiler: String,     Name des Tags, an dem geteilt werden soll (bspw. "p")
+                                ! Default (None) werden alle Elemente mit IDs herangezogen
         Output:
-            String, String mit den Absätzen getrennt mit Zeilenumbruch (jeder 10te Absatz nicht)
-            String, String mit den Absätzen getrennt mit Zeilenumbruch (nur jeder 10te Absatz)
+            String, String mit den Textteilen getrennt mit Zeilenumbruch (alle Textteile)
+            String, String mit den Textteilen getrennt mit Zeilenumbruch (jedes 10te Textteil nicht)
+            String, String mit den Textteilen getrennt mit Zeilenumbruch (nur jedes 10te Textteil)
     '''
     # Initialisierungen
+    ges = ""
     train = ""
     eval = ""
     z = 1
 
-    # Lese alle Tags mit gegebenem Namen aus
+    # Lese alle Tags mit gegebenem Namen aus oder...
     if teiler != None:
         for inh in data.find_all(teiler):
             
@@ -332,18 +355,23 @@ def erstelle_plaintext (data: bs4.element, nl: bool = False, teiler: str = None)
                 else:
                     train += plain(inh, True)
             z += 1
+            if ges == "":
+                ges += plain(inh)
+            else:
+                ges += plain(inh, True)
             
         if nl:
-            return "\n" + train, "\n" + eval
+            return "\n" + ges, "\n" + train, "\n" + eval
         else:
-            return train, eval
+            return ges, train, eval
         
-    # Lese alle Tags mit gesetzter id aus
+    # ... lese alle Tags mit gesetzter id aus
     else:
         for inh in data.find_all(id=True):
             
             # Alle Tags sollten eine Überschrift oder Absatz sein
-            if inh.name == "h1" or inh.name == "h2" or inh.name == "h3" or inh.name == "h4" or inh.name == "h5" or inh.name == "p":
+            h = ["h1", "h2", "h3", "h4", "h5", "h6", "h7", "h8", "h9"]
+            if inh.name in h or inh.name == "p":
 
                 # Teilung in Trainingsdaten und Evaluationsdaten - jeder zehnte Absatz wird für die Evaluation vorgesehen
                 if z%10 == 0:
@@ -357,6 +385,10 @@ def erstelle_plaintext (data: bs4.element, nl: bool = False, teiler: str = None)
                     else:
                         train += plain(inh, True)
                 z += 1
+                if ges == "":
+                    ges += plain(inh)
+                else:
+                    ges += plain(inh, True)
                 
             # ... ansonsten: Probleme aufzeigen
             else:
@@ -364,9 +396,9 @@ def erstelle_plaintext (data: bs4.element, nl: bool = False, teiler: str = None)
                 print(inh.name)
             
         if nl:
-            return "\n" + train, "\n" + eval
+            return "\n" + ges, "\n" + train, "\n" + eval
         else:
-            return train, eval
+            return ges, train, eval
 
 
 def plain(data: bs4.element, nl: bool = False):
@@ -376,7 +408,7 @@ def plain(data: bs4.element, nl: bool = False):
             data:   bs4,        Beautiful Soup Element des zu bearbeitenden Elements
             nl:     Boolean,    Angabe, ob ein Zeilenumbruch vor den Ausgabestring gesetzt werden soll
         Output:
-            String, String mit den bereinigtem Element
+            String, String mit dem bereinigten Element
     '''
     # Initialisierungen
     t = re.sub("\s+", " ", str(data))
@@ -411,7 +443,6 @@ def plain(data: bs4.element, nl: bool = False):
     t = t.strip()
     t = re.sub("^(.\s)+", "", t)
     t = re.sub("(\s.)+$", "", t)
-
     # Nichtleere Strings werden zurückgegeben (leere Strings sollten eigentlich nicht vorkommen)
     if t == " " or t == "":
         return ""
