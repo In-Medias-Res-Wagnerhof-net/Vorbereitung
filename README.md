@@ -48,13 +48,17 @@ Es wurden folgende Modelle lokal installiert:
 
 - ***Textprozess_Kant.py***: Vorbereitung des Kantkorpus.
 - ***Textprozess_functions.py***: Funktionen, die für die Vorbereitung benötigt werden.
-- ***Training.py***: Training der Modelle mithilfe des Kantkorpus.
+- ***Trainingspipeline.py***: Pipeline, die das gesamte Training managed.
+- ***Training_functions.py***: Funktionen, die für das Training benötigt werden.
 - ***Vektoren-Test.py***: Test der Modelle und Erstellung der Vektoren zu dem in Textprozess vorbereiteten Korpus.
 
 
 ---
 
 ## HowTo
+
+Dieses HowTo richtet sich vor allem an Neulinge der Natürlichen Sprachverarbeitung. Für Fortgeschrittenere ist wohl eher die [Auswertung](#ergebnisse) der Ergebnisse relevant, bzw. wie das Verfahren Implementiert wurde. Auf Feinheiten der Implementierung kann aufgrund des Platzes nicht in großem Umfang eingegangen werden. Dazu gibt es auf der Webseite weitere Informationen.
+
 
 ### Einführung
 
@@ -66,6 +70,9 @@ Je nach Vorhaben kann direkt zu den entsprechenden Kapiteln gesprungen werden:
 - **[Vorbereitung der Daten](#vorbereitung-der-daten)**: In dieser Sektion wird die hier durchgeführte Bereinigung der Daten und die Aufbereitung der drei notwendigen Formen der Daten aufgezeigt.
 - **[Training der Modelle](#training-der-modelle)**: Hier wird das (weitere) Training der Modelle implementiert.
 - **[Implementierung der Suche](#implementierung-der-suche)**: Hier ist der Quellcode um lokal eine Suche zu implementieren sowie die zugehörige Erklärung.
+
+### Programmierumgebung einrichten
+
 
 ### Vorbereitung der Daten
 
@@ -108,6 +115,95 @@ Grundsätzlich wird hier wie in Schritt 3 verfahren, jedoch werden in den normal
 
 ### Training der Modelle
 
+In die Trainingspipeline sind zwei Arten des Trainings verbaut: Einmal das Training des grundlegenden Modells mittels Masked Language modeling (entsprechend dem offiziellen Paper von [Bert](https://arxiv.org/pdf/1810.04805)) mit anschließendem Feintuning und zum anderen das Training mittels [TSDAE](https://arxiv.org/abs/2104.06979) und anschließendem Feintuning. Mit ein paar Anpassungen ist es auch möglich dies zu koppeln und auf das grundlegende Training mit TSDAE aufzubauen und danach feinzutunen. Auch eine Anpassung des Vokabulars ist bereits eingebaut, wird in Trainingspipeline.py allerdings nicht genutzt, da mit dem geringen Umfang des hier genutzten Koprus zu befürchten steht, dass die Gewichtungen der neuen Einträge nicht ausreichend trainiert werden.
+
+Wie bei der Vorbereitung der Daten ist auch das Programm in Funktionen und Anwendung des Trainings geteilt. Das Training geschieht mittels HuggingFace Vorlagen und Benutzung von SentenceTransformer. Das Modell sollte eine dafür entsprechende Form haben. Für TSDAE sind die Vorgaben noch strikter (Distilbert und ConvBERT bspw. funktionieren nicht). Für das Feintuning wird ein deutsches Datenset von deepset, [GermanDPR](https://huggingface.co/datasets/deepset/germandpr), verwendet und nicht extra eigene Information Retrieval Daten aus dem Kantkorpus extrahiert. 
+
+<details>
+<summary>Schritt 0: Grundsätzliches</summary>
+
+In *Training_functions.py* werden vier Funktionen bereitgestellt. Mithilfe von *lade_Modell()* kann das Modell enstprechend den Vorgaben eingelesen werden. Es deckt auch die neue Initialisierung eines SentenceTransformermodells ab. Die Funktion deckt für den Moment nur die Modelle *[svalabs/bi-electra-ms-marco-german-uncased](https://huggingface.co/svalabs/bi-electra-ms-marco-german-uncased)*, *[deepset/gelectra-large-germanquad](https://huggingface.co/deepset/gelectra-large-germanquad)*, *[dbmdz/distilbert-base-german-europeana-cased](https://huggingface.co/dbmdz/distilbert-base-german-europeana-cased)* und *[dbmdz/convbert-base-german-europeana-cased](https://huggingface.co/dbmdz/convbert-base-german-europeana-cased)* ab (Vielen Dank für die Bereitstellung dieser vortrainierten Modelle!). Die anderen drei Funktionen sind für das Laden der Daten. Auch wenn diese Funktionen in Sachen Vorbereitung einiges Abnehmen, müssen für das Training noch einige weitere Angaben gemacht werden. Dies ist allerdings Dank der entsprechenden Plattformen größtenteils vergleichsweise einfach und ist, vor allem für allgemeine Anwendungsfälle, recht gut dokumentiert.
+
+</details>
+
+<details>
+<summary>Schritt 1.1: Training des grundlegenden Modells</summary>
+
+Das grundlegende Transformer Modell wird hier mittels MaskedLM trainiert, entsprechend den [Handlungsanweisungen bei HuggingFace](https://huggingface.co/docs/transformers/main/tasks/masked_language_modeling) für den HuggingFace [Trainer](https://huggingface.co/docs/transformers/v4.40.2/en/main_classes/trainer). Als Datengrundlage werden zwei Textdateien benötigt, in denen die Textabschnitte mit Zeilenumbruch getrennt vorliegen und die bereits in Trainings- (Vorsilbe "train_") und Evaluierungsdate (Vorsilbe "eval_") unterteilt sind. Die Daten sollten aufbereitet sein, aber noch nicht tokenisiert. Mittels *lese_dataset()* werden die Daten dann in die Form eines [Datensets](https://huggingface.co/docs/datasets) gebracht. Für Testzwecke ist es auch möglich nur einen kleinen Auszug zu erhalten. Damit kann dann die eigene Implementierung ausführlich getestet werden, damit bei dem vollen Training alles optimal eingestellt ist und funktioniert. Wichtig ist jedoch immer, dass cased Modelle die Groß-/Kleinschreibung beachten, uncased benötigen kleinen Text. Es müssen dann nur noch die jeweils passenden Angaben für den eigenen Korpus und die eigene Hardware gemacht werden (Hierauf wird etwas ausführlicher eingegangen, weil diese Informationen teilweise etwas verstreut auf HuggingFace liegen):
+
+- **Trainingsparameter und Evaluierung**:
+    - Lernrate *learning_rate*: Angabe, wie schnell das Modell lernen darf. Es wird die niedrigste Fehlerquote gesucht. Es gilt: Je höher die Lernrate, desto schneller kann ein Modell trainiert werden, aber umso verlustreicher im Bezug auf das vorher trainierte ist das Training auch. In dem ursprünglichen Paper werden Lernraten zwischen 2e-5 bis 5e-5 angegeben (Für einen groben Überblick zum Lernen von Neuronalen Netzen: [Wie lernen neuronale Netze?](https://www.statworx.com/content-hub/blog/wie-lernen-neuronale-netze/)).
+    - Epochen *num_train_epochs*: Anzahl der Durchgänge, die einen Datensatz behandeln. Viele Durchgänge verbrauchen viel Rechenkapazität und können Overfitting verursachen, allerdings wird eine gewisse Anzahl an Durchgängen gebraucht, damit die neuen Daten in dem Modell Beachtung finden. In dem Paper werden 2-3 Epochen gerechnet (Eine Möglichkeit die optimale Epochenanzahl zu berechnen ist die K-fold-Methode. Beschrieben wird sie bspw. bei [Medium](https://medium.com/geekculture/finding-optimal-epochs-using-k-fold-for-transformer-models-615a002195cb))
+    - Komplexitätsbestrafung *weight_decay*: Mit diesem Wert kann weiterhin das Overfitting erschwert werden. Es wird die Komplexität eines Modells bestraft, sodass das Modell mehr generalisiert (Als erste Einführung [This thing called Weight Decay](https://towardsdatascience.com/this-thing-called-weight-decay-a7cd4bcfccab))
+    - Evaluationsstrategie *evaluation_strategy*: Wann/Wie oft geprüft werden soll, ob das Training erfolgsversprechend ist. Mit der Angabe "epoch" wird nach jeder Epoche evaluiert, bei "steps" alle x Schritte. Wie groß x ist wird mit *eval_steps* gesetzt. Die Evaluierung benötigt einige Rechenkapazitäten, sodass sie nicht zu häufig gemacht werden kann, sollte allerdings auch nicht zu selten durchgeführt werden, weil es dann sein kann, dass sich das Modell in eine schlechte Richtung bewegt hat und man den großen Zwischenschritt umsonst berechnet hat.
+- **Hardwareanpassungen**:
+    - Batch-größe *per_device_train_batch_size*: Die Größe eines Schrittes beim Trainieren. Bei größeren Batches werden mehr Daten gleichzeitig geladen. Ist ein Batch zu klein, wird der Prozessor/die Grafikkarte nicht ausgelastet, weil zu kleine Schritte gemacht werden, ist er zu groß kann das das Training auch verlangsamen, weil die Daten nicht schnell genug herbeigeschafft werden können. Außerdem benötigen größere Batches auch mehr Arbeitsspeicher, der vorhanden sein sollte. Es ist gut eine passende Batch-Größe für das aktuelle Verfahren und die genutzten Daten zu ermitteln, bevor das volle Training gestartet wird.
+    - Weitere Möglichkeiten wie *gradient_accumulation_steps*, *per_device_train_batch_size* oder *use_cpu* und viele weitere können individuell eingestellt werden, benötigen aber etwas Vorwissen und Willen sich mit der eigenen Hardware, wie auch dem eigenen Programm und den eigenen Daten auseinanderzusetzen. 
+- **Rückgabe und Speicherstrategie**: 
+    - Rückgabepfad *output_dir*: Hier wird das Modell, aber auch alles weitere gespeichert, sodass daraus jederzeit ein funktionierendes Modell geladen werden kann (auch der Tokenizer sollte hier gespeichert werden).
+    - Speicherhäufigkeit *save_strategy*: Die Angabe hier muss zur *evaluation_strategy* passen. Nach jeder Evaluation wird das neue Modell gespeichert.
+    - Speicherlimit *save_total_limit*: Ohne Limit würden alle Zwischenschritte gespeichert, was extrem viel Speicherplatz verbrauchen würde. Ist der Speicher voll, bricht der Trainingsvorgang ab. Daher ist es sinnvoll nur das Minimum zu speichern. Allerdings kann man bei mehreren Speicherungen auf eine Version eines früheren Modells zurückgreifen, wenn man vermutet, dass man zu viele Epochen treiniert hat und es z.B. zu einem Overfitting gekommen ist. Zu Beachten ist außerdem, dass immer wenigstens zwei Versionen gespeichert werden müssen, weil diese bei der Evaluierung gegeneinander abgeglichen werden. Es wird die Anzahl der zu speichernden Zwischenschritte gespeichert.
+    - Bestes Modell Heraussuchen *load_best_model_at_end*: Hier wird die Angabe gemacht, ob zuletzt das beste oder das letzte Modell im Trainer geladen ist. Diese Angabe verändert, welches Modell am Ende mittels *.save_model()* gespeichert wird. 
+- **Alle Angaben** und was sie jeweils bewirken sind in der Doku zu den [TrainingArguments](https://huggingface.co/docs/transformers/main/en/main_classes/trainer#transformers.TrainingArguments) bei HuggingFace zu finden.
+
+</details>
+
+<details>
+<summary>Schritt 1.2: Feintuning des SentenceTransformerModells nach dem Training des grundlegenden Modells</summary>
+
+Nachdem wahlweise ein neues SentenceTransformerModell als Aufsatz für das zugrundeliegende BertModell erstellt wurde oder ein schon existierendes geladen wurde, wird dieses Modell nun mithilfe von Textgruppen auf den konkreten Anwendungsfall hin trainiert. Das heißt es wird die Ähnlichkeit von Textstellen zu einer Frage berechnet. In dem Datenset [GermanDPR](https://huggingface.co/datasets/deepset/germandpr) sind Frage-Antwortkombinationen zu finden. Dabei gibt es zu jeder Frage immer mindestens eine gut passende (Positive) Antwort und eine nicht passende (negative) Antwort. Bei HuggingFace gibt es auch dazu eine [Einführung](https://huggingface.co/blog/how-to-train-sentence-transformers). Mithilfe von *lese_InputExample()* werden die Daten in das richtige Format gebracht, auch für die Evaluierung (in dem Datenset ist sowohl ein Trainings- als auch ein Testset enthalten).
+
+Entsprechend den Daten wird der loss mittels TripletLoss und die Evaluation mittels TripletEvaluator berechnet. Dabei wird der Abstand zwischen der Frage und der positiven Antword minimiert und umgekehrt der Abstand zwischen Frage und negativer Antwort maximiert. In dem Datenset handelt es sich tatsächlich immer um Fragen als Anker, sodass das Modell dahingehend trainiert wird und besonders gut mit Fragen als Eingaben funktioniert. Hinzu kommen auch hier noch spezifische Angaben:
+
+- **Trainingsparameter und Evaluierung**:
+    - Epochen *epochs*: Anzahl der Durchgänge, die einen Datensatz behandeln. Viele Durchgänge verbrauchen viel Rechenkapazität und können Overfitting verursachen, allerdings wird eine gewisse Anzahl an Durchgängen gebraucht, damit die neuen Daten in dem Modell Beachtung finden. Standardmäßig sind 10 gesetzt, was doch recht viel ist.
+    - Komplexitätsbestrafung *weight_decay*: Mit diesem Wert kann weiterhin das Overfitting erschwert werden. Es wird die Komplexität eines Modells bestraft, sodass das Modell mehr generalisiert (Als erste Einführung: [This thing called Weight Decay](https://towardsdatascience.com/this-thing-called-weight-decay-a7cd4bcfccab))
+    - Evaluationsschritte *evaluation_steps*: Wann/Wie oft geprüft werden soll, ob das Training erfolgsversprechend ist. Es gibt keine Angabe für epochenweise Evaluation, das muss selbst anhand der Schrittanzahl gesetzt werden. Die Evaluierung benötigt einige Rechenkapazitäten, sodass sie nicht zu häufig gemacht werden kann, sollte allerdings auch nicht zu selten durchgeführt werden, weil es dann sein kann, dass sich das Modell in eine schlechte Richtung bewegt hat und man den großen Zwischenschritt umsonst berechnet hat.
+    - Aufwärmphase *warmup_steps*: Innerhalb dieser Phase wird die Lernrate drastisch erhöht, sodass ein schnelleres Lernen möglich ist. Dies ist sinnvoll, wenn der SentenceTransformer neu initilisiert wurde und daher zuvor noch randomisierte Gewichte enthält.
+- **Hardwareanpassungen**:
+    - Batch-größe *batch_size*: Innerhalb des Dataloaders kann eine Batchgröße eingestellt werden, also die Größe eines Schrittes beim Trainieren. Bei größeren Batches werden mehr Daten gleichzeitig geladen. Ist ein Batch zu klein, wird der Prozessor/die Grafikkarte nicht ausgelastet, weil zu kleine Schritte gemacht werden, ist er zu groß kann das das Training auch verlangsamen, weil die Daten nicht schnell genug herbeigeschafft werden können. Außerdem benötigen größere Batches auch mehr Arbeitsspeicher, der vorhanden sein sollte. Es ist gut eine passende Batch-Größe für das aktuelle Verfahren und die genutzten Daten zu ermitteln, bevor das volle Training gestartet wird.
+    - Prozessor *device*: Bei dem Training mit der GPU kam es zu einem Datenleak, gerade bei zusätzlich wenig Arbeitsspeicher kann das zu einem Out of Memory (OOM)-Fehler. Bei der Berechnung auf der CPU war dies nicht der Fall. Je nach Computerausstattung ist es allerdings sehr viel zeitintensiver mit der CPU zu rechnen.
+- **Rückgabe und Speicherstrategie**: 
+    - Rückgabe- und Checkpointpfad *output_path* und *checkpoint_path*: trainierte Modelle und Zwischenspeicherpunkte können gesondert gespeichert werden.
+    - Speicherhäufigkeit *checkpoint_save_steps*: Angabe, alle wie viel Schritte gespeichert wird.
+    - Speicherlimit *checkpoint_save_total_limit*: Ohne Limit würden alle Zwischenschritte gespeichert, was extrem viel Speicherplatz verbrauchen würde. Ist der Speicher voll, bricht der Trainingsvorgang ab. Daher ist es sinnvoll nur das Minimum zu speichern. Allerdings kann man bei mehreren Speicherungen auf eine Version eines früheren Modells zurückgreifen, wenn man vermutet, dass man zu viele Epochen treiniert hat und es z.B. zu einem Overfitting gekommen ist. Zu Beachten ist außerdem, dass immer wenigstens zwei Versionen gespeichert werden müssen, weil diese bei der Evaluierung gegeneinander abgeglichen werden. Es wird die Anzahl der zu speichernden Zwischenschritte gespeichert.
+    - Bestes Modell Speichern *save_best_model*: Hier wird die Angabe gemacht, ob zuletzt das beste gespeichert werden soll. 
+- **Alle Angaben** und was sie jeweils bewirken sind in der Doku zu dem [SentenceTransformer](https://www.sbert.net/docs/training/overview.html) bei sbert zu finden.
+
+</details>
+
+<details>
+<summary>Schritt 2.1: Vortrainieren des SentenceTransformers mittels TSDAE</summary>
+
+Nachdem wahlweise ein neues SentenceTransformerModell als Aufsatz für das zugrundeliegende BertModell erstellt wurde oder ein schon existierendes geladen wurde, wird dieses Modell nun mithilfe von korrumpierten Sätzen aus dem Korpus vortrainiert. Der Computer muss mithilfe des Modells die Sätze wiederherstellen. Dazu müssen die Daten als Liste von Sätzen vorliegen. Das Einlesen aus einer Datei, in der sie mit Zeilenumbruch getrennt vorliegen wird mit der Funktion *lese_datalisten()* realisiert. Nun muss nur noch das [Skript von den Erfindern](https://www.sbert.net/examples/unsupervised_learning/TSDAE/README.html) umgesetzt werden. Bis auf den Rückgabe/Speicherangaben sowie der Batchgröße wurden die Angaben von dort übernommen.
+
+</details>
+
+<details>
+<summary>Schritt 2.2: Feintuning des SentenceTransformerModells nach dem Vortrainieren mittels TSDAE</summary>
+
+Nachdem das SentenceTransformerModell als Aufsatz für das zugrundeliegende BertModell erstellt und vortrainiert wurde, wird es nun mithilfe von Textgruppen auf den konkreten Anwendungsfall hin trainiert. Dies geschieht analog zu Schritt 1.2. Es wird die Ähnlichkeit von Textstellen zu einer Frage berechnet. In dem Datenset [GermanDPR](https://huggingface.co/datasets/deepset/germandpr) sind Frage-Antwortkombinationen zu finden. Dabei gibt es zu jeder Frage immer mindestens eine gut passende (Positive) Antwort und eine nicht passende (negative) Antwort. Bei HuggingFace gibt es auch dazu eine [Einführung](https://huggingface.co/blog/how-to-train-sentence-transformers). Mithilfe von *lese_InputExample()* werden die Daten in das richtige Format gebracht, auch für die Evaluierung (in dem Datenset ist sowohl ein Trainings- als auch ein Testset enthalten).
+
+Entsprechend den Daten wird der loss mittels TripletLoss und die Evaluation mittels TripletEvaluator berechnet. Dabei wird der Abstand zwischen der Frage und der positiven Antword minimiert und umgekehrt der Abstand zwischen Frage und negativer Antwort maximiert. In dem Datenset handelt es sich tatsächlich immer um Fragen als Anker, sodass das Modell dahingehend trainiert wird und besonders gut mit Fragen als Eingaben funktioniert. Hinzu kommen auch hier noch spezifische Angaben:
+
+- **Trainingsparameter und Evaluierung**:
+    - Epochen *epochs*: Anzahl der Durchgänge, die einen Datensatz behandeln. Viele Durchgänge verbrauchen viel Rechenkapazität und können Overfitting verursachen, allerdings wird eine gewisse Anzahl an Durchgängen gebraucht, damit die neuen Daten in dem Modell Beachtung finden. Standardmäßig sind 10 gesetzt, was doch recht viel ist.
+    - Komplexitätsbestrafung *weight_decay*: Mit diesem Wert kann weiterhin das Overfitting erschwert werden. Es wird die Komplexität eines Modells bestraft, sodass das Modell mehr generalisiert (Als erste Einführung: [This thing called Weight Decay](https://towardsdatascience.com/this-thing-called-weight-decay-a7cd4bcfccab))
+    - Evaluationsschritte *evaluation_steps*: Wann/Wie oft geprüft werden soll, ob das Training erfolgsversprechend ist. Es gibt keine Angabe für epochenweise Evaluation, das muss selbst anhand der Schrittanzahl gesetzt werden. Die Evaluierung benötigt einige Rechenkapazitäten, sodass sie nicht zu häufig gemacht werden kann, sollte allerdings auch nicht zu selten durchgeführt werden, weil es dann sein kann, dass sich das Modell in eine schlechte Richtung bewegt hat und man den großen Zwischenschritt umsonst berechnet hat.
+    - Aufwärmphase *warmup_steps*: Innerhalb dieser Phase wird die Lernrate drastisch erhöht, sodass ein schnelleres Lernen möglich ist. Dies ist sinnvoll, wenn der SentenceTransformer neu initilisiert wurde und daher zuvor noch randomisierte Gewichte enthält.
+- **Hardwareanpassungen**:
+    - Batch-größe *batch_size*: Innerhalb des Dataloaders kann eine Batchgröße eingestellt werden, also die Größe eines Schrittes beim Trainieren. Bei größeren Batches werden mehr Daten gleichzeitig geladen. Ist ein Batch zu klein, wird der Prozessor/die Grafikkarte nicht ausgelastet, weil zu kleine Schritte gemacht werden, ist er zu groß kann das das Training auch verlangsamen, weil die Daten nicht schnell genug herbeigeschafft werden können. Außerdem benötigen größere Batches auch mehr Arbeitsspeicher, der vorhanden sein sollte. Es ist gut eine passende Batch-Größe für das aktuelle Verfahren und die genutzten Daten zu ermitteln, bevor das volle Training gestartet wird.
+    - Prozessor *device*: Bei dem Training mit der GPU kam es zu einem Datenleak, gerade bei zusätzlich wenig Arbeitsspeicher kann das zu einem Out of Memory (OOM)-Fehler. Bei der Berechnung auf der CPU war dies nicht der Fall. Je nach Computerausstattung ist es allerdings sehr viel zeitintensiver mit der CPU zu rechnen.
+- **Rückgabe und Speicherstrategie**: 
+    - Rückgabe- und Checkpointpfad *output_path* und *checkpoint_path*: trainierte Modelle und Zwischenspeicherpunkte können gesondert gespeichert werden.
+    - Speicherhäufigkeit *checkpoint_save_steps*: Angabe, alle wie viel Schritte gespeichert wird.
+    - Speicherlimit *checkpoint_save_total_limit*: Ohne Limit würden alle Zwischenschritte gespeichert, was extrem viel Speicherplatz verbrauchen würde. Ist der Speicher voll, bricht der Trainingsvorgang ab. Daher ist es sinnvoll nur das Minimum zu speichern. Allerdings kann man bei mehreren Speicherungen auf eine Version eines früheren Modells zurückgreifen, wenn man vermutet, dass man zu viele Epochen treiniert hat und es z.B. zu einem Overfitting gekommen ist. Zu Beachten ist außerdem, dass immer wenigstens zwei Versionen gespeichert werden müssen, weil diese bei der Evaluierung gegeneinander abgeglichen werden. Es wird die Anzahl der zu speichernden Zwischenschritte gespeichert.
+    - Bestes Modell Speichern *save_best_model*: Hier wird die Angabe gemacht, ob zuletzt das beste gespeichert werden soll. 
+- **Alle Angaben** und was sie jeweils bewirken sind in der Doku zu dem [SentenceTransformer](https://www.sbert.net/docs/training/overview.html) bei sbert zu finden.
+
+</details>
+
+
 ### Implementierung der Suche
 
 
@@ -133,15 +229,19 @@ Vorbereitung:
     - lxml
     - re
 
-Training.py:
-- Einlesen:
-    - bs4
-    - re
-    - lxml
-- Training
+Training:
+- Trainingspipeline.py:
     - transformers
+    - sentence_transformers
+    - torch
+    - math
+    - nltk
+    - Training_functions
+- Training_functions.py:
+    - transformers
+    - sentence_transformers
     - datasets
-    - trl
+    - spacy
 
 Vektoren-Test.py
 - Korpus:
@@ -182,3 +282,4 @@ Kantkorpus und Modelle (wegen der Größe) werden (vorerst) nicht übertragen.
 - Veröffentlichung des Repositoriums
 - Webseite richtig verlinken (überall)
 - Seitenumbrüche einbeziehen und Zitationsvorschlag erstellen
+- requirements.txt

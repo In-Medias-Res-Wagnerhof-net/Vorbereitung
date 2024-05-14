@@ -16,6 +16,7 @@ import bs4
 from bs4 import BeautifulSoup as bs
 import re
 
+
 ##############################################################################################################
 ##
 ##      Funktionen
@@ -28,6 +29,7 @@ import re
     3. Strukturierung
     4. Nachbereitung
 '''
+
 '''
     1. Dateiverarbeitung
 '''
