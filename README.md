@@ -206,6 +206,38 @@ Entsprechend den Daten wird der loss mittels TripletLoss und die Evaluation mitt
 
 ### Implementierung der Suche
 
+Um die Suche anzuwenden müssen mithilfe eines SentenceTransformermodells die Vektorabbildung sowohl der Zielabsätze, als auch der Eingabe berechnet werden um anschließend den/die Zielabsatz/sätze herauszusuchen, die die größte Übereinstimmung mit der Sucheingabe aufweisen. Dazu werden die Python-Dateien *Vektoren-Test.py* und *Anwendung_functions.py* herangezogen.
+
+<details>
+<summary>Schritt 1: Vorbereitung der Daten</summary>
+
+Für die Suche sollten die zu durchsuchenden Absätze bereits in einer tei-Datei mit ausgezeichneten Ids vorliegen. Hier werden sogar zwei Versionen verwendet: zum einen die normalisierten Texte zum Berechnen mit dem Computer, zum anderen die originalen Texte, die für die Ausgabe verwendet werden. **Die IDs müssen genau übereinstimmen**, damit von dem normalisierten Absatz wieder auf die originale Textdatei geschlossen werden kann. 
+
+Mittels *bereite_daten()* werden diese Dateien eingelesen und Listen erstellt:
+- ID-Listen:
+    - Liste der IDs, die im originalen Text vorkommen.
+    - Liste der IDs, die im normalisierten Text vorkommen.
+- Absatzlisten:
+    - Listen der Absätze die im originalen Text vorkommen.
+    - Listen der Absätze die im normalisierten Text vorkommen.
+- ID-Anzahlliste, die angibt, wie viele Ids in einem Band (normalisiert) vorkommen.
+Solange die Ids zweifelsfrei zugeordnet werden können, ist es in Ordnung, wenn für die normalisierten Listen weniger Absätze einbezogen werden. Es können hier also Absätze aussortiert werden. Absatz- und Id-Liste müssen aber immer übereinstimmen in ihrer Form und Reihenfolge.
+
+</details>
+
+<details>
+<summary>Schritt 2: Berechnung der Vektoren</summary>
+
+Liegen die Listen in entsprechender Form vor, kann mithilfe von *vektorenberechnen()* die Vektorberechnung angestoßen werden. Liegen die Vektoren bereits vor, müssen sie lediglich eingelesen werden, ansonsten werden sie berechnet und für eine zukünftige Verwendung abgespeichert. Die Berechnung wird mithilfe eines SentenceTransformermodells durchgeführt, das bedeutet, wenn dieses noch nicht trainiert wurde, können auch bei einem gut trainierten Transformermodell schlechte Ergebnisse resultieren.
+
+</details>
+
+<details>
+<summary>Schritt 3: Die eigentliche Suche</summary>
+
+Zuletzt werden die Listen und die Vektoren mit einer Eingabe in Verbindung gesetzt. Es wird also für die Eingabe ein Vektor berechnet und dieser mit den normalisierten Vektoren verglichen. Der/die beste/n Ergebnisse werden nun mittels *suche_absatz()* aus den originalen Daten herausgesucht. Dabei wird zuerst die Id des Absatzes in dem normalisierten Datensatz herausgesucht, dann diese in der Id-Liste der originalen Absätze gesucht und mithilfe der so gewonnenen Indizes der Absatz gefunden und ausgegeben. Sollte die Id des Ergebnisses nicht in der originalen Id-Liste enthalten sein, so wird das Ergebnis übersprungen.
+
+</details>
 
 ---
 
