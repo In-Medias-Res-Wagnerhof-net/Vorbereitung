@@ -300,14 +300,14 @@ Kantkorpus und Modelle (wegen der Größe) werden (vorerst) nicht übertragen.
 
 #### Dringend
 
-- Id korrekt verwenden und mit Vektoren kompatibilisieren
+
 
 #### Wichtig
 
 - Überschriftenmanagement (Bei der kompletten Suche?)
 - Prozessieren des Historischen Wörterbuchs der Philosophie
 - Dokumentation
-- Ausgabe der ID in Vektoren-Test.py
+- Auswertung
 
 #### Mittelfristig
 
