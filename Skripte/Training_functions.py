@@ -43,6 +43,7 @@ def lade_modell(mod:str, output:str = "training", typ:str = "maskedLM", pfad:str
             pfad:       String,     Pfad zu Ordner mit Modellen
             stexist:    Boolean,    Angabe, ob SentenceTranfsormermodell bereits existiert
             device:     String,     Deviceangabe für Sentencetransformer
+            name:       Boolean,    Angabe, ob Modellname zurückgegeben werden soll
         Output:
             HuggingFaceModell
     '''
@@ -53,30 +54,48 @@ def lade_modell(mod:str, output:str = "training", typ:str = "maskedLM", pfad:str
     elif mod == "gelectra-training":
         model_name = pfad + "deepset/gelectra-large-germanquad-training"
         ausgabepfad = pfad + "deepset/gelectra-large-germanquad-training-" + output
+    elif mod == "gelectra-training-fein":
+        model_name = pfad + "deepset/gelectra-large-germanquad-training-fein"
+        ausgabepfad = pfad + "deepset/gelectra-large-germanquad-training-fein-" + output
     elif mod == "gelectra-tsdae":
         model_name = pfad + "deepset/gelectra-large-germanquad-tsdae"
         ausgabepfad = pfad + "deepset/gelectra-large-germanquad-tsdae-" + output
+    elif mod == "gelectra-tsdae-fein":
+        model_name = pfad + "deepset/gelectra-large-germanquad-tsdae-fein"
+        ausgabepfad = pfad + "deepset/gelectra-large-germanquad-tsdae-fein-" + output
     elif mod == "convbert":
         model_name = pfad + "dbmdz/convbert-base-german-europeana-cased"
         ausgabepfad = pfad + "dbmdz/convbert-base-german-europeana-cased-" + output
     elif mod == "convbert-training":
         model_name = pfad + "dbmdz/convbert-base-german-europeana-cased-training"
         ausgabepfad = pfad + "dbmdz/convbert-base-german-europeana-cased-training-" + output
+    elif mod == "convbert-training-fein":
+        model_name = pfad + "dbmdz/convbert-base-german-europeana-cased-training-fein"
+        ausgabepfad = pfad + "dbmdz/convbert-base-german-europeana-cased-training-fein-" + output
     elif mod == "distilbert":
         model_name = pfad + "dbmdz/distilbert-base-german-europeana-cased"
         ausgabepfad = pfad + "dbmdz/distilbert-base-german-europeana-cased-" + output
     elif mod == "distilbert-training":
         model_name = pfad + "dbmdz/distilbert-base-german-europeana-cased-training"
         ausgabepfad = pfad + "dbmdz/distilbert-base-german-europeana-cased-training-" + output
+    elif mod == "distilbert-training-fein":
+        model_name = pfad + "dbmdz/distilbert-base-german-europeana-cased-training-fein"
+        ausgabepfad = pfad + "dbmdz/distilbert-base-german-europeana-cased-trainin-feing-" + output
     elif mod == "bielectra":
         model_name = pfad + "svalabs/bi-electra-ms-marco-german-uncased"
         ausgabepfad = pfad + "svalabs/bi-electra-ms-marco-german-uncased-" + output
     elif mod == "bielectra-training":
         model_name = pfad + "svalabs/bi-electra-ms-marco-german-uncased-training"
         ausgabepfad = pfad + "svalabs/bi-electra-ms-marco-german-uncased-training-" + output
+    elif mod == "bielectra-training-fein":
+        model_name = pfad + "svalabs/bi-electra-ms-marco-german-uncased-training-fein"
+        ausgabepfad = pfad + "svalabs/bi-electra-ms-marco-german-uncased-training-fein-" + output
     elif mod == "bielectra-tsdae":
         model_name = pfad + "svalabs/bi-electra-ms-marco-german-uncased-tsdae"
         ausgabepfad = pfad + "svalabs/bi-electra-ms-marco-german-uncased-tsdae-" + output
+    elif mod == "bielectra-tsdae-fein":
+        model_name = pfad + "svalabs/bi-electra-ms-marco-german-uncased-tsdae-fein"
+        ausgabepfad = pfad + "svalabs/bi-electra-ms-marco-german-uncased-tsdae-fein-" + output
     else:
         print("Es gab ein Problem beim Laden des Modells...")
         exit()

@@ -70,6 +70,7 @@ Je nach Vorhaben kann direkt zu den entsprechenden Kapiteln gesprungen werden:
 - **[Vorbereitung der Daten](#vorbereitung-der-daten)**: In dieser Sektion wird die hier durchgeführte Bereinigung der Daten und die Aufbereitung der drei notwendigen Formen der Daten aufgezeigt.
 - **[Training der Modelle](#training-der-modelle)**: Hier wird das (weitere) Training der Modelle implementiert.
 - **[Implementierung der Suche](#implementierung-der-suche)**: Hier ist der Quellcode um lokal eine Suche zu implementieren sowie die zugehörige Erklärung.
+- **[Auswertung der Modelle](#auswertung)**: Zuletzt gibt es noch eine implementierte Auswertung unter anderem mithilfe des [Mean Reciprocal Rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank).
 
 ### Programmierumgebung einrichten
 
@@ -241,8 +242,42 @@ Zuletzt werden die Listen und die Vektoren mit einer Eingabe in Verbindung geset
 
 ---
 
-## Ergebnisse
+## Auswertung
 
+Für die Auswertung der Modelle gibt es zwei Verfahren: den [Mean Reciprocal Rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) (MRR) und den des gewichteten MRR (gMRR). Bei zweiterem werden die Ergebnisse nicht nur in Treffer und nicht Treffer unterteilt, sondern eine weitere Bewertung der Ergebnisse durchgeführt, um so auch Abschnitte einzubeziehen, die zwar kein perfekter Treffer sind, aber dennoch relevante oder spannende Informationen beinhalten. Dies geschieht mittels *Auswertung.py* und *Auswertung_functions.py*. Für beide Auswertungen muss eine **manuelle Bewertung** durchgeführt werden.
+
+Hier die Berechnungsformeln mit |A| als Anzahl der Antworten, r als Rang der Antwort und b als Bewertung:
+$\text{MRR} &= \frac{\sum\limits_{i=1}^{|\text{A}|}\frac{1}{\text{r}_i}}{|\text{A}|}$
+$\text{MRR}_g &= \frac{\sum\limits_{i=1}^{|\text{A}|}\frac{1}{\text{min}(\text{r}_i \cdot \text{b}_i^2)}}{|\text{A}|}$
+
+<details>
+<summary>Schritt 1: Ergebnisse erhalten und abspeichern</summary>
+
+Zu Beginn müssen die Ergebnisse berechnet werden. Das geschieht analog zu der [Implementierung der Suche](#implementierung-der-suche) und falls die Vektoren dort bereits berechnet wurden können sie wiederverwendet werden. Ansonsten werden sie berechnet und an dem angegebenen Ort abgespeichert. Dafür wird auf Funktionen von *Anwendung_functions.py* zurückgegriffen. Die Ergebnisse werden anschließend in zwei Formen abgespeichert: Einerseits für jedes Modell als Ergebnisliste pro Frage. Diese Datei ist nur für die anschließende Auswertung relevant. Andererseits wird für jede Frage ein Ergebniskatalog erstellt, in dem eine Bewertung durchgeführt werden muss, damit eine Auswertung durchgeführt werden kann. In diesen Dateien werden die Ergebnisse von allen Modellen duplikatfrei und ohne Angabe der Modelle gesichert.
+
+</details>
+
+<details>
+<summary>Schritt 2: Bewertung</summary>
+
+Die Bewertung der einzelnen Ergebnisse ist händisch durchzuführen. Es bietet sich an für jede Frage-Antwortkombination eine Bewertung zwischen 0 und 10 durchzuführen. 0 steht dabei für kein Treffer (dieses Ergebnis wird nicht einbezogen in die Auswertung), eins für perfekter Treffer. Umso höher die Zahl weiterhin ist, desto schlechter ist das Ergebnis zu bewerten. Für den MRR werden nur Treffer der Wertung 1 herangezogen, während für den gMRR auch die weiteren Wertungen herangezogen werden. Die Tabelle sollte dann folgendermaßen aussehen:
+
+| ID    | Absatz        | {Frage}       |
+|-------|---------------|---------------|
+|{ID1}  | {Absatztext1} | {Bewertung1}  |
+|{ID2}  | {Absatztext2} | {Bewertung2}  |
+|...    | ...           | ...           |
+
+Die Bewertung muss also in die dritte Spalte hinter ID und Abschnitttext geschrieben werden (unter die Frage), damit das Programm die Auswertung durchführen kann. Danach ist in der Konsole mit der Eingabe *j* zu bestätigen, dass die Bewertung erfolgt ist.
+
+</details>
+
+<details>
+<summary>Schritt 3: Auswertung</summary>
+
+Nachdem die Bewertung erfolgt ist, werden die Dateien eingelesen und in Zusammenhang gestellt. Entscheidend ist dabei die ID, sowie die Frage und die Position. Aus diesen drei Faktoren zieht das Programm die Bewertung und den Rang und Kann so für jede Frage einen Wert ermitteln, deren Mittelwert dann den MRR/gMRR darstellt. Alle Werte werden nun pro Modell in eine Tabelle geschrieben. Es werden auch die Werte pro Frage gespeichert, sodass eine Mittelwertberechnung von nur bestimmten Fragen vereinfacht wird (Hierzu müssen nur die Werte der Fragen aufaddiert und durch die Anzahl dieser Frage geteilt werden). MRR und gMRR befinden sich in der untersten Zeile.
+
+</details>
 
 ---
 
@@ -275,15 +310,27 @@ Training:
     - datasets
     - spacy
 
-Vektoren-Test.py
-- Korpus:
+Anwendung:
+- Anwendung.py:
+    - Anwendung_functions
+- Anwendung_functions.py:
     - bs4
-    - re
     - lxml
-- Modell:
+    - re
     - sentence_transformers
     - numpy
     - sklearn
+    - Training_functions
+
+Auswertung:
+- Auswertung.py:
+    - csv
+    - Auswertung_functions
+- Auswertung_functions.py:
+    - sklearn
+    - numpy
+    - Textprozess_functions
+    - Anwendung_functions
 
 </details>
 
@@ -306,11 +353,10 @@ Kantkorpus und Modelle (wegen der Größe) werden (vorerst) nicht übertragen.
 
 - Überschriftenmanagement (Bei der kompletten Suche?)
 - Prozessieren des Historischen Wörterbuchs der Philosophie
-- Dokumentation
-- Auswertung
 
 #### Mittelfristig
 
+- Dokumentation überarbeiten
 - Veröffentlichung des Repositoriums
 - Webseite richtig verlinken (überall)
 - Seitenumbrüche einbeziehen und Zitationsvorschlag erstellen

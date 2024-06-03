@@ -28,7 +28,7 @@ if not nltk.data.find('tokenizers/punkt'):
 ##      Programm
 ##
 ##############################################################################################################
-#Initialisierung
+# Initialisierung
 vorschau = False
 größe = 8
 
@@ -145,7 +145,7 @@ for mod in modellnamen:
             checkpoint_save_total_limit=3,
             save_best_model=True
         )
-
+        
 
 
     '''
@@ -244,3 +244,49 @@ for mod in modellnamen:
                 save_best_model=True
             )
 
+
+
+        '''
+            TSDAE Training auf feintuned
+        '''
+        print("-----------------------------------------------------------------------")
+        print("TSDAE Training")
+        print("Modell laden...")
+        modt = mod + "-training-fein"
+        modell, rückgabe, modellname = lade_modell(modt, "tsdae", "SentenceTransformer", stexist=True, name=True)
+
+        # Testen ob Modell schon existiert
+        try:
+            open(rückgabe + "/config.json")
+            training = False
+            print("Training wurde bereits ausgeführt!")
+        except:
+            training = True
+
+        if training == True:
+            print("Daten laden...")
+            sätze = lese_datalisten(mod, vorschau=vorschau,)
+
+            # Daten korumpieren
+            train_dataset = datasets.DenoisingAutoEncoderDataset(sätze)
+
+            print("Training starten...")
+            # Vorgaben für das Anpassen des Models setzen
+            train_dataloader = DataLoader(train_dataset, batch_size=größe)
+
+            train_loss = losses.DenoisingAutoEncoderLoss(
+                modell, decoder_name_or_path=modellname, tie_encoder_decoder=True
+            )
+
+            # Model anpassen und speichern
+            modell.fit(
+                train_objectives=[(train_dataloader, train_loss)], 
+                epochs=1, 
+                weight_decay = 0,
+                scheduler="constantlr",
+                optimizer_params={"lr": 3e-5},
+                output_path=rückgabe,
+                checkpoint_path=rückgabe, 
+                checkpoint_save_total_limit=3,
+                save_best_model=True
+            )

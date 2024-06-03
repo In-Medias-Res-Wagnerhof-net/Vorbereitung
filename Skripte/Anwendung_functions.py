@@ -181,7 +181,10 @@ def lade_stmodell (modellname:str):
             SentenceTransformer,    existierendes Sentencetransformermodell
     """
     # Lade Modell
-    stmodell = lade_modell(modellname, typ="SentenceTransformer", stexist=True)
+    if "fein" in modellname or "tsdae" in modellname:
+        stmodell = lade_modell(modellname, typ="SentenceTransformer", stexist=True)
+    else:
+        stmodell = lade_modell(modellname, typ="SentenceTransformer")
 
     return stmodell[0]
 
@@ -225,7 +228,7 @@ def vektorenberechnen (bi_model:SentenceTransformer, modell:str, alledokumenteno
 '''
     4. Suche
 '''
-def suche_absatz (alleidsnorm:list, alleidsorig:list, alledokumenteorig:list, idanzahl:list, absatznummer:int):
+def suche_absatz (alleidsnorm:list, alleidsorig:list, alledokumenteorig:list, idanzahl:list, absatznummer:int, getid:bool = False):
     """
         Gibt den Absatz entsprechend der Id zurück, basierend auf mapping wird zum nächsten Text gesprungen
         Input: 
@@ -254,7 +257,10 @@ def suche_absatz (alleidsnorm:list, alleidsorig:list, alledokumenteorig:list, id
 
     # Rückgabe des Absatzes in der originalen Absatzliste entsprechend der ID
     try:
-        return alledokumenteorig[band][alleidsorig[band].index(str(sid))]
+        if getid:
+            return alledokumenteorig[band][alleidsorig[band].index(str(sid))], sid
+        else:
+            return alledokumenteorig[band][alleidsorig[band].index(str(sid))]
     except:
         return False
 
