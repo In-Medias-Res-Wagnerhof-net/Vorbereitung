@@ -22,12 +22,13 @@ from Auswertung_functions import *
 ##
 ##############################################################################################################
 # Initialisierung
-modelle = ["bielectra", "distilbert", "convbert", "gelectra"]
-zusätze = ["train", "train-fein", "tsdae", "tsdae-fein"]
+modelle = ["bielectra", "convbert", "distilbert", "gelectra"]
+zusätze = ["training", "training-fein", "tsdae", "tsdae-fein"]
 
 for modell in modelle.copy():
     for zusatz in zusätze:
-        modelle.append(modell + "-" + zusatz)
+        if (modell != "distilbert" and modell != "convbert") or not "tsdae" in zusatz:
+            modelle.append(modell + "-" + zusatz)
         
 eingaben = erhalte_eingaben()
 

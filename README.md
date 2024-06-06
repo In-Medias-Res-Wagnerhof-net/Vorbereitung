@@ -268,7 +268,7 @@ Die Bewertung der einzelnen Ergebnisse ist händisch durchzuführen. Es bietet s
 |{ID2}  | {Absatztext2} | {Bewertung2}  |
 |...    | ...           | ...           |
 
-Die Bewertung muss also in die dritte Spalte hinter ID und Abschnitttext geschrieben werden (unter die Frage), damit das Programm die Auswertung durchführen kann. Danach ist in der Konsole mit der Eingabe *j* zu bestätigen, dass die Bewertung erfolgt ist.
+Die Bewertung muss also in die dritte Spalte hinter ID und Abschnitttext geschrieben werden (unter die Frage), damit das Programm die Auswertung durchführen kann. Die Formatierung muss erhalten bleiben (Delimiter muss ein Komma sein). Danach ist in der Konsole mit der Eingabe *j* zu bestätigen, dass die Bewertung erfolgt ist.
 
 </details>
 
