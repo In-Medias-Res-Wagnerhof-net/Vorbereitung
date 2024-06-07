@@ -247,8 +247,8 @@ Zuletzt werden die Listen und die Vektoren mit einer Eingabe in Verbindung geset
 Für die Auswertung der Modelle gibt es zwei Verfahren: den [Mean Reciprocal Rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) (MRR) und den des gewichteten MRR (gMRR). Bei zweiterem werden die Ergebnisse nicht nur in Treffer und nicht Treffer unterteilt, sondern eine weitere Bewertung der Ergebnisse durchgeführt, um so auch Abschnitte einzubeziehen, die zwar kein perfekter Treffer sind, aber dennoch relevante oder spannende Informationen beinhalten. Dies geschieht mittels *Auswertung.py* und *Auswertung_functions.py*. Für beide Auswertungen muss eine **manuelle Bewertung** durchgeführt werden.
 
 Hier die Berechnungsformeln mit |A| als Anzahl der Antworten, r als Rang der Antwort und b als Bewertung:
-$$\text{MRR} &= \frac{\sum\limits_{i=1}^{|\text{A}|}\frac{1}{\text{r}_i}}{|\text{A}|}$$
-$$\text{MRR}_g &= \frac{\sum\limits_{i=1}^{|\text{A}|}\frac{1}{\text{min}(\text{r}_i \cdot \text{b}_i^4)}}{|\text{A}|}$$
+$$\displaystyle \text{MRR} &= \frac{\sum_{i=1}^{|\text{A}|}\frac{1}{\text{r}_i}}{|\text{A}|}$$
+$$\displaystyle \text{MRR}_g &= \frac{\sum_{i=1}^{|\text{A}|}\frac{1}{\text{min}(\text{r}_i \cdot \text{b}_i^4)}}{|\text{A}|}$$
 
 <details>
 <summary>Schritt 1: Ergebnisse erhalten und abspeichern</summary>
