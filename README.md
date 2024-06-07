@@ -1,5 +1,5 @@
 # Vorbereitung
-Source Code für das das Masterarbeitsprojekt einer semantischen Suche für das Gesamtwerk von Immanuel Kant. Das Projekt basiert auf der [online Ausgabe des Gesamtwerk von Immanuel Kant](http://kant.korpora.org). Vielen Dank für die Bereitstellung der Daten!
+Source Code für das das Masterarbeitsprojekt einer semantischen Suche für das Gesamtwerk von Immanuel Kant. Das Projekt basiert auf der [online Ausgabe des Gesamtwerks von Immanuel Kant](http://kant.korpora.org). Vielen Dank für die Bereitstellung der Daten!
 
 Die Webseite mit der implementierten Suche ist unter folgendem Link zu finden:
 [Link](http://www.in-medias-res.wagnerhof.net) (Momentan leider offline)
@@ -57,7 +57,7 @@ Es wurden folgende Modelle lokal installiert:
 
 ## HowTo
 
-Dieses HowTo richtet sich vor allem an Neulinge der Natürlichen Sprachverarbeitung. Für Fortgeschrittenere ist wohl eher die [Auswertung](#ergebnisse) der Ergebnisse relevant, bzw. wie das Verfahren Implementiert wurde. Auf Feinheiten der Implementierung kann aufgrund des Platzes nicht in großem Umfang eingegangen werden. Dazu gibt es auf der Webseite weitere Informationen.
+Dieses HowTo richtet sich vor allem an Neulinge der Natürlichen Sprachverarbeitung. Für Fortgeschrittenere ist wohl eher die [Auswertung](#ergebnisse) der Ergebnisse relevant, bzw. wie das Verfahren Implementiert wurde. Auf Feinheiten der Implementierung kann aufgrund des Platzes nicht in vollem Umfang eingegangen werden. Dazu gibt es auf der Webseite weitere Informationen.
 
 
 ### Einführung
@@ -247,8 +247,8 @@ Zuletzt werden die Listen und die Vektoren mit einer Eingabe in Verbindung geset
 Für die Auswertung der Modelle gibt es zwei Verfahren: den [Mean Reciprocal Rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) (MRR) und den des gewichteten MRR (gMRR). Bei zweiterem werden die Ergebnisse nicht nur in Treffer und nicht Treffer unterteilt, sondern eine weitere Bewertung der Ergebnisse durchgeführt, um so auch Abschnitte einzubeziehen, die zwar kein perfekter Treffer sind, aber dennoch relevante oder spannende Informationen beinhalten. Dies geschieht mittels *Auswertung.py* und *Auswertung_functions.py*. Für beide Auswertungen muss eine **manuelle Bewertung** durchgeführt werden.
 
 Hier die Berechnungsformeln mit |A| als Anzahl der Antworten, r als Rang der Antwort und b als Bewertung:
-$\text{MRR} &= \frac{\sum\limits_{i=1}^{|\text{A}|}\frac{1}{\text{r}_i}}{|\text{A}|}$
-$\text{MRR}_g &= \frac{\sum\limits_{i=1}^{|\text{A}|}\frac{1}{\text{min}(\text{r}_i \cdot \text{b}_i^2)}}{|\text{A}|}$
+$$\text{MRR} &= \frac{\sum\limits_{i=1}^{|\text{A}|}\frac{1}{\text{r}_i}}{|\text{A}|}$$
+$$\text{MRR}_g &= \frac{\sum\limits_{i=1}^{|\text{A}|}\frac{1}{\text{min}(\text{r}_i \cdot \text{b}_i^4)}}{|\text{A}|}$$
 
 <details>
 <summary>Schritt 1: Ergebnisse erhalten und abspeichern</summary>
@@ -345,19 +345,6 @@ Kantkorpus und Modelle (wegen der Größe) werden (vorerst) nicht übertragen.
 
 ### TODO
 
-#### Dringend
-
-
-
-#### Wichtig
-
-- Überschriftenmanagement (Bei der kompletten Suche?)
-- Prozessieren des Historischen Wörterbuchs der Philosophie
-
-#### Mittelfristig
-
-- Dokumentation überarbeiten
-- Veröffentlichung des Repositoriums
 - Webseite richtig verlinken (überall)
-- Seitenumbrüche einbeziehen und Zitationsvorschlag erstellen
-- requirements.txt
+- Zitationsvorschlag erstellen
+- requirements.txt 

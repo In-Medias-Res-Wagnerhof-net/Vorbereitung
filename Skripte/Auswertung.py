@@ -192,9 +192,9 @@ for j, moderg in enumerate(ergebnisseeingabe):
                     r = int(e["Rang"])
                     # gegebenenfalls Zählernenner neu setzen
                     if b != 0:
-                        zählernennerg = min(zählernennerg, b*b*r)
+                        zählernennerg = min(zählernennerg, b*b*b*b*r)
                         if b == 1:
-                            zählernenner = min(zählernenner, b*b*r)
+                            zählernenner = min(zählernenner, b*b*b*b*r)
                     break
         # Fragebewertungen berechnen und speichern
         zähler += 1/zählernenner
