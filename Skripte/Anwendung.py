@@ -13,6 +13,7 @@
 ##
 ##############################################################################################################
 from Anwendung_functions import *
+import pickle
 
 
 ##############################################################################################################
@@ -30,6 +31,19 @@ modelle = ["convbert", "distilbert"]                # Modell
 if type(modelle) == str:
     # Bände einlesen
     alleidsnorm, alledokumentenorm, idanzahl, alleidsorig, alledokumenteorig = bereite_daten(bandanzahl, modelle)
+    
+    pfad = "Vorbereitung/Daten/Kant/"
+    try:
+        open(pfad + "alleids")
+    except:
+        with open(pfad + "alleids", "wb") as fp:   #Pickling
+            pickle.dump(alleidsnorm, fp)
+    try:
+        open(pfad + "idanzahl")
+    except:
+        with open(pfad + "idanzahl", "wb") as fp:   #Pickling
+            pickle.dump(idanzahl, fp)
+
 
     # Modell laden
     bi_model = lade_stmodell(modelle)

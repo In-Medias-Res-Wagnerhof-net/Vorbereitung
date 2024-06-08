@@ -23,7 +23,7 @@ from Auswertung_functions import *
 ##############################################################################################################
 # Initialisierung
 modelle = ["bielectra", "convbert", "distilbert", "gelectra"]
-zusätze = ["training", "training-fein", "tsdae", "tsdae-fein"]
+zusätze = ["training", "training-fein", "training-fein-tsdae", "tsdae", "tsdae-fein"]
 
 for modell in modelle.copy():
     for zusatz in zusätze:

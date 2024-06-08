@@ -1,9 +1,10 @@
 .DS_Store
 
-Daten/Kant-Abt1-TEI-vorlaeufig/*
-!Daten/Kant-Abt1-TEI-vorlaeufig/mapping.txt
-Daten/hwb/*
+Daten/Vektoren/*
+Daten/Kant/*
+Daten/hwp/*
 
 svalabs*
 deepset*
 HuggingFace*
+dbmdz*
