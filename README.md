@@ -242,7 +242,7 @@ Zuletzt werden die Listen und die Vektoren mit einer Eingabe in Verbindung geset
 
 ---
 
-## Auswertung
+## Teilautomatisierte Auswertung
 
 Für die Auswertung der Modelle gibt es zwei Verfahren: den [Mean Reciprocal Rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) (MRR) und den des gewichteten MRR (gMRR). Bei zweiterem werden die Ergebnisse nicht nur in Treffer und nicht Treffer unterteilt, sondern eine weitere Bewertung der Ergebnisse durchgeführt, um so auch Abschnitte einzubeziehen, die zwar kein perfekter Treffer sind, aber dennoch relevante oder spannende Informationen beinhalten. Dies geschieht mittels *Auswertung.py* und *Auswertung_functions.py*. Für beide Auswertungen muss eine **manuelle Bewertung** durchgeführt werden.
 
@@ -282,6 +282,12 @@ Die Bewertung muss also in die dritte Spalte hinter ID und Abschnitttext geschri
 Nachdem die Bewertung erfolgt ist, werden die Dateien eingelesen und in Zusammenhang gestellt. Entscheidend ist dabei die ID, sowie die Frage und die Position. Aus diesen drei Faktoren zieht das Programm die Bewertung und den Rang und Kann so für jede Frage einen Wert ermitteln, deren Mittelwert dann den MRR/gMRR darstellt. Alle Werte werden nun pro Modell in eine Tabelle geschrieben. Es werden auch die Werte pro Frage gespeichert, sodass eine Mittelwertberechnung von nur bestimmten Fragen vereinfacht wird (Hierzu müssen nur die Werte der Fragen aufaddiert und durch die Anzahl dieser Frage geteilt werden). MRR und gMRR befinden sich in der untersten Zeile.
 
 </details>
+
+---
+
+## Auswertung
+
+Bei der Auswertung kam es zu ambivalenten Ergebnissen. Grundsätzlich ist die Tendenz von besseren Ergebnissen bei längeren Eingaben klar erkennbar. Allerdings gibt es auch hier Ausreißer: Beispielsweise kommen die Versionen des bi-electra-Modells besonders gut mit der Begriffskombination "freier Wille" aus und gerade das Grundmodell lieferte die besten Ergebnisse, die sehr sauber und final waren, jedoch nicht so sehr zur weiteren Recherche einluden, weniger Hintergrundinformationen lieferten und sich weniger "im Sinne Kants" lasen. Allgemein wäre ein größerer Fragenkatalog sicher von Vorteil um positive und negative Ausreiser abzufangen und die "Glückskomponente" zu verringern.
 
 ---
 

@@ -57,6 +57,9 @@ def lade_modell(mod:str, output:str = "training", typ:str = "maskedLM", pfad:str
     elif mod == "gelectra-training-fein":
         model_name = pfad + "deepset/gelectra-large-germanquad-training-fein"
         ausgabepfad = pfad + "deepset/gelectra-large-germanquad-training-fein-" + output
+    elif mod == "gelectra-training-fein-tsdae":
+        model_name = pfad + "deepset/gelectra-large-germanquad-training-fein-tsdae"
+        ausgabepfad = pfad + "deepset/gelectra-large-germanquad-training-fein-tsdae-" + output
     elif mod == "gelectra-tsdae":
         model_name = pfad + "deepset/gelectra-large-germanquad-tsdae"
         ausgabepfad = pfad + "deepset/gelectra-large-germanquad-tsdae-" + output
@@ -90,6 +93,9 @@ def lade_modell(mod:str, output:str = "training", typ:str = "maskedLM", pfad:str
     elif mod == "bielectra-training-fein":
         model_name = pfad + "svalabs/bi-electra-ms-marco-german-uncased-training-fein"
         ausgabepfad = pfad + "svalabs/bi-electra-ms-marco-german-uncased-training-fein-" + output
+    elif mod == "bielectra-training-fein-tsdae":
+        model_name = pfad + "svalabs/bi-electra-ms-marco-german-uncased-training-fein-tsdae"
+        ausgabepfad = pfad + "svalabs/bi-electra-ms-marco-german-uncased-training-fein-tsdae-" + output
     elif mod == "bielectra-tsdae":
         model_name = pfad + "svalabs/bi-electra-ms-marco-german-uncased-tsdae"
         ausgabepfad = pfad + "svalabs/bi-electra-ms-marco-german-uncased-tsdae-" + output

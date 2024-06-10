@@ -219,6 +219,6 @@ for i, modell in enumerate(modelle):
         writer.writeheader()
         for j, eingabe in enumerate(eingaben):
             row = {"MRR": einzel[i][j], 'gMRR': geinzel[i][j], "Frage": eingabe}
-            writer.writerow(e)
+            writer.writerow(row)
         row = {"MRR": mrrs[i], 'gMRR': gmrrs[i]}
-        writer.writerow(e)
+        writer.writerow(row)
