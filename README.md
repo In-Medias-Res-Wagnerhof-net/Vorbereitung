@@ -287,9 +287,9 @@ Nachdem die Bewertung erfolgt ist, werden die Dateien eingelesen und in Zusammen
 
 ## Auswertung
 
-Bei der Auswertung kam es zu ambivalenten Ergebnissen. Grundsätzlich ist die Tendenz von besseren Ergebnissen bei längeren Eingaben klar erkennbar. Allerdings gibt es auch hier Ausreißer: Beispielsweise kommen die Versionen des bi-electra-Modells besonders gut mit der Begriffskombination "freier Wille" aus und gerade das Grundmodell lieferte die besten Ergebnisse, die sehr sauber und final waren, jedoch nicht so sehr zur weiteren Recherche einluden, weniger Hintergrundinformationen lieferten und sich weniger "im Sinne Kants" lasen. Allgemein wäre ein größerer Fragenkatalog sicher von Vorteil um positive und negative Ausreiser abzufangen und die "Glückskomponente" zu verringern.
+Bei der Auswertung kam es zu ambivalenten Ergebnissen. Grundsätzlich ist die Tendenz von besseren Ergebnissen bei längeren Eingaben klar erkennbar. Allerdings gibt es auch hier Ausreißer: Beispielsweise kommen die Versionen des bi-electra-Modells besonders gut mit der Begriffskombination "freier Wille" aus und gerade das Grundmodell lieferte die besten Ergebnisse, die sehr sauber und final waren, jedoch nicht so sehr zur weiteren Recherche einluden, weniger Hintergrundinformationen lieferten und sich weniger "im Sinne Kants" lasen. Allgemein wäre ein größerer Fragenkatalog sicher von Vorteil um positive und negative Ausreiser abzufangen und die "Glückskomponente" zu verringern. Nachfolgend befindet sich die Auswertung in zusammengefasster Tabellenform:
 
-### Fragenkatalog
+### Eingabekatalog
 | **Eingabe-Nr.** 	| **Eingabetext**                                                                                                                                     	|
 |-----------------:	|:----------------------------------------------------------------------------------------------------------------------------------------------------	|
 | **1.1**         	| Determinismus                                                                                                                                       	|
@@ -326,8 +326,9 @@ Bei der Auswertung kam es zu ambivalenten Ergebnissen. Grundsätzlich ist die Te
 |   **Gelectra** 	| 0,25463 \|   0,00104  |  0,00417 \| 0,00886 |    0,00000 \| 0,00352  | 0,00000 \|  0,00090 	|   0,00000 \|  0,00330  |  0,06250 \|  0,06530 |
 
 
-### Bielectra
+### Ergebnisse nach Modell
 
+## Bielectra
 |  **Eingabe-Nr.** 	| **Basis (MRR \| gMRR)** 	                                                        | **Training (MRR \| gMRR)** 	                    | **Training (MRR \| gMRR)** 	      	                    | **TSDAE (MRR \| gMRR)**                  | **TSDAE-Fein (MRR \| gMRR)** 	                	| **Training-Fein-TSDAE (MRR \| gMRR)** 	                             	|
 |-----------------:	|:----------------------------------------------------------------------------:	|:-----------------------------------------:	|:--------------------------------------------------:	|:-----------------------------------:	|:------------------------------------------------:	|:--------------------------------------------------------------------:	|
 |          **1.1** 	|               0,00000              	\|               0,00160               	|       0,00000      	\|       0,00195       	|         0,00000         \|          0,03125         	|     0,00000     	\|     0,00000     	|        0,00000       \|        0,00154        	|            0,00000            	\|            0,00309            	|
@@ -356,7 +357,7 @@ Bei der Auswertung kam es zu ambivalenten Ergebnissen. Grundsätzlich ist die Te
 |          **4.6** 	|               0,00000              	\|               0,01563               	|       0,00000      	\|       0,00053       	|         0,00000         \|          0,00077         	|     0,00000     	\|     0,00077     	|        0,00000       \|        0,00123        	|            0,00000            	\|            0,00000            	|
 | **Durchschnitt** 	|             **0,25463**            	\|             **0,26647**             	|     **0,06706**    	\|     **0,07062**     	|       **0,21776**       \|        **0,22342**       	|   **0,07813**   	\|   **0,08733**   	|      **0,13542**     \|      **0,14159**      	|          **0,07187**          	\|          **0,08380**          	|
 
-### Distilbert
+## Distilbert
 
 |  **Eingabe-Nr.** 	| **Basis (MRR \| gMRR)** 	        	|**Training (MRR \| gMRR)** 	     	| **Training (MRR \| gMRR)** 	     	|
 |-----------------:	|:----------------------:	|:------------------------------:	|:------------------------------------------------:	|
@@ -386,7 +387,7 @@ Bei der Auswertung kam es zu ambivalenten Ergebnissen. Grundsätzlich ist die Te
 |          **4.6** 	|   0,00000  	\|   0,00039   	|      0,00000     	\|      0,01563      	|            0,00000           \|         0,00160        	|
 | **Durchschnitt** 	|   0,00000  	\|   0,00545   	|      0,00417     	\|      0,00938      	|            0,12153           \|         0,13133        	|
 
-### Converb
+## Convbert
 
 |  **Eingabe-Nr.** 	| **Basis (MRR \| gMRR)** 	        	|**Training (MRR \| gMRR)** 	     	| **Training (MRR \| gMRR)** 	     	|
 |-----------------:	|:----------------------:	|:------------------------------:	|:------------------------------------------------:	|
@@ -416,7 +417,7 @@ Bei der Auswertung kam es zu ambivalenten Ergebnissen. Grundsätzlich ist die Te
 |          **4.6** 	| 0,00000 	\|  0,00000 	|    0,00000   	\|    0,00027    	|      0,00000      	\|       0,00000      	|
 | **Durchschnitt** 	| 0,00000 	\|  0,00085 	|    0,00000   	\|    0,00333    	|      0,00521      	\|       0,00628      	|
 
-### Gelectra
+## Gelectra
 
 |  **Eingabe-Nr.** 	| **Basis (MRR \| gMRR)** 	                                                        | **Training (MRR \| gMRR)** 	                    | **Training (MRR \| gMRR)** 	      	                    | **TSDAE (MRR \| gMRR)**                  | **TSDAE-Fein (MRR \| gMRR)** 	                	| **Training-Fein-TSDAE (MRR \| gMRR)** 	                             	|
 |-----------------:	|:----------------------------------------------------------------------------:	|:-----------------------------------------:	|:--------------------------------------------------:	|:-----------------------------------:	|:------------------------------------------------:	|:--------------------------------------------------------------------:	|
@@ -511,6 +512,5 @@ Kantkorpus und Modelle (wegen der Größe) werden (vorerst) nicht übertragen.
 
 ### TODO
 
-- Webseite richtig verlinken (überall)
 - Zitationsvorschlag erstellen
 - requirements.txt 
