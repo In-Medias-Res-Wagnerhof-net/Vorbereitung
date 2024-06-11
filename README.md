@@ -287,7 +287,7 @@ Nachdem die Bewertung erfolgt ist, werden die Dateien eingelesen und in Zusammen
 
 ## Auswertung
 
-Bei der Auswertung kam es zu ambivalenten Ergebnissen. Grundsätzlich ist die Tendenz von besseren Ergebnissen bei längeren Eingaben klar erkennbar. Allerdings gibt es auch hier Ausreißer: Beispielsweise kommen die Versionen des bi-electra-Modells besonders gut mit der Begriffskombination "freier Wille" aus und gerade das Grundmodell lieferte die besten Ergebnisse, die sehr sauber und final waren, jedoch nicht so sehr zur weiteren Recherche einluden, weniger Hintergrundinformationen lieferten und sich weniger "im Sinne Kants" lasen. Allgemein wäre ein größerer Fragenkatalog sicher von Vorteil um positive und negative Ausreiser abzufangen und die "Glückskomponente" zu verringern. Nachfolgend befindet sich die Auswertung in zusammengefasster Tabellenform:
+Bei der Auswertung kam es zu ambivalenten Ergebnissen. Grundsätzlich ist die Tendenz von besseren Ergebnissen bei längeren Eingaben klar erkennbar. Allerdings gibt es auch hier Ausreißer: Beispielsweise kommen die Versionen des bi-electra-Modells besonders gut mit der Begriffskombination "freier Wille" aus und gerade das Grundmodell lieferte die besten Ergebnisse, die sehr sauber und final waren, jedoch nicht so sehr zur weiteren Recherche einluden, weniger Hintergrundinformationen lieferten und sich weniger "im Sinne Kants" lasen. Allgemein wäre ein größerer Fragenkatalog sicher von Vorteil um positive und negative Ausreiser abzufangen und die "Glückskomponente" zu verringern. Nachfolgend befindet sich der Eingabekatalog:
 
 ### Eingabekatalog
 | **Eingabe-Nr.** 	| **Eingabetext**                                                                                                                                     	|
@@ -317,6 +317,7 @@ Bei der Auswertung kam es zu ambivalenten Ergebnissen. Grundsätzlich ist die Te
 | **4.5**         	| Bundeskanzler, Wahl, Bundesregierung, Bundestag                                                                                                     	|
 | **4.6**         	| Welche Aufgaben hat der Bundeskanzler aktuell außer Deutschland zu repräsentieren?                                                                  	|
 
+Außerdem die Auswertung in zusammengefasster Tabellenform:
 ### Meta-Vergleich
 |  **Eingabe-Nr.** 	| **Basis (MRR \| gMRR)** | **Training (MRR \| gMRR)** | **Training (MRR \| gMRR)**  | **TSDAE (MRR \| gMRR)**  | **TSDAE-Fein (MRR \| gMRR)** 	| **Training-Fein-TSDAE (MRR \| gMRR)** |
 |----------------	|:-------:	|:--------:	|:-------------:	|:-------:	|:----------:	|:-------------------:	|
