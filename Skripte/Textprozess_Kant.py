@@ -57,7 +57,7 @@ for i in range(1,10):
     ## Original
     # Datei anpassen und auflösen
     odata = bs(
-        anpassen(orig, i, False, False), 
+        anpassen(orig, i, False, False, False), 
         'xml'
     )
     # Absätze markieren

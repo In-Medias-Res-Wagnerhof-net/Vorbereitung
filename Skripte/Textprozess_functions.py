@@ -69,7 +69,7 @@ def speichere(pfad: str, inhalt: str, form = "w"):
 '''
     2. Vorbereitung
 '''
-def anpassen(tei: str, band: int, satzteilung: bool = True, wortteilung: bool = True):
+def anpassen(tei: str, band: int, satzteilung: bool = True, wortteilung: bool = True, pbs: bool = True):
     '''
         Bereinige die Datei in grundsätzlicher Hinsicht:
             Namespaces angleichen, 
@@ -80,6 +80,7 @@ def anpassen(tei: str, band: int, satzteilung: bool = True, wortteilung: bool = 
             band:           Integer,    aktueller Band
             satzteilung:    Boolean,    Angabe ob Satzteilung des Normalizers entfernt werden soll
             wortteilung:    Boolean,    Angabe ob Wortteilung des Normalizers entfernt werden soll
+            pbs:            Boolean,    Angabe ob Seitenangaben entfernt werden sollen
         Output:
             String,     bereinigter Inhalt
     '''
@@ -118,8 +119,13 @@ def anpassen(tei: str, band: int, satzteilung: bool = True, wortteilung: bool = 
         data.find(type = "appendix").decompose()
 
     # Datei von Seiten- und Zeilenumbrüchen bereinigen
-    for pb in data.find_all("pb"):
-        pb.decompose()
+    if pbs:
+        for pb in data.find_all("pb"):
+            pb.decompose()
+    else:
+        for pb in data.find_all("pb"):
+            if pb.has_attr("ed"):
+                pb.decompose()
     for lb in data.find_all("lb"):
         lb.decompose()
 

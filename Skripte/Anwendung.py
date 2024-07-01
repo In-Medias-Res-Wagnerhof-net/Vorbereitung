@@ -30,7 +30,7 @@ modelle = ["convbert", "distilbert"]                # Modell
 ## Suche
 if type(modelle) == str:
     # Bände einlesen
-    alleidsnorm, alledokumentenorm, idanzahl, alleidsorig, alledokumenteorig = bereite_daten(bandanzahl, modelle)
+    alleidsnorm, alledokumentenorm, idanzahl, alleidsorig, alledokumenteorig, seitenangaben = bereite_daten(bandanzahl, modelle)
     
     pfad = "Vorbereitung/Daten/Kant/"
     try:
@@ -53,7 +53,7 @@ if type(modelle) == str:
     features_docs = vektorenberechnen(bi_model, modelle, alledokumentenorm, bandanzahl)
 
     # Suche
-    suche(bi_model, modelle, features_docs, alleidsnorm, alleidsorig, alledokumenteorig, idanzahl, suchergebnisanzahl)
+    suche(bi_model, modelle, features_docs, alleidsnorm, alleidsorig, alledokumenteorig, idanzahl, suchergebnisanzahl, zitmapping=seitenangaben)
 
 elif type(modelle) == list:
     # Suchabfrage wiederholen, solange Modell existiert

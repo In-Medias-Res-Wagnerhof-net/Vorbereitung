@@ -16,6 +16,7 @@ from Training_functions import lade_modell
 
 from bs4 import BeautifulSoup as bs
 import re
+import pickle
 
 from sentence_transformers import SentenceTransformer
 import numpy as np
@@ -120,7 +121,38 @@ def satzextraktion (data:bs, low:bool = False):
     return ids, absätze
 
 
-def bereite_daten (bandanzahl:int = 10, modell:str = None, low:bool = None):
+def erstelle_zitmapping (band:int, pfad:str = "Vorbereitung/Daten/Kant/mapping", data:bs = None):
+    """
+        Speichert Mapping von ID zu Seitenzahl
+        Input: 
+            data:   bs4,        Beautiful Soup Element der zu Grunde liegenden Datei 
+                                ! zu bearbeitende Textstellen sollten bereits mit id-tag ausgezeichnet sein und pb Element mit Seitenzahl haben
+        Output:
+            str,   mapping
+    """
+    # Testen ob Datei existiert
+    try:
+        with open(pfad+str(band), "rb") as fp:   # Unpickling
+            return pickle.load(fp)
+    except:
+        print("Es konnte keine nutzbare Datei gefunden werden. Sie muss daher neu erstellt werden.")
+        if (data == None):
+            return None
+        
+    plist = re.split('<pb n="', str(data.body))
+    mapping = {}
+    for p in plist:
+        ids = re.findall(r'id="(\d+\.\d+)"', p)
+        for i in ids:
+            mapping[i] = p[:3]
+
+    with open(pfad+str(band), "wb") as fp:   #Pickling
+        pickle.dump(mapping, fp)
+        
+    return mapping
+
+
+def bereite_daten (bandanzahl:int = 10, modell:str = None, low:bool = None, zit:bool = False):
     """
         Bereite Daten aller Bände vor. Es wird eine ID-Liste und eine Dokumentenliste jeweils für die normalisierten und originalen Dateien aller Bände erstellt sowie ein Mapping, das die Gesamtanzahl der Ids jedes Bandes enthält.
         Input: 
@@ -140,6 +172,7 @@ def bereite_daten (bandanzahl:int = 10, modell:str = None, low:bool = None):
     idanzahl = []
     alleidsorig = []
     alledokumenteorig = []
+    czit = []
     if low == None and modell != None:
         if "bi-electra" in modell:
             low = True
@@ -158,6 +191,11 @@ def bereite_daten (bandanzahl:int = 10, modell:str = None, low:bool = None):
         teia = ladeTEI(i, False)
         aids, adocs = satzextraktion(teia, low)
 
+        # Seitenangabenliste erstellen
+        if zit:
+            zitmapping = erstelle_zitmapping(i, data=teia)
+            czit.append(zitmapping)
+
         # geschachtelte Liste und Mapping erstellen
         alleidsnorm.append(ids)
         alledokumentenorm.append(docs)
@@ -166,7 +204,10 @@ def bereite_daten (bandanzahl:int = 10, modell:str = None, low:bool = None):
         alleidsorig.append(aids)
         alledokumenteorig.append(adocs)
 
-    return alleidsnorm, alledokumentenorm, idanzahl, alleidsorig, alledokumenteorig
+    if zit:
+        return alleidsnorm, alledokumentenorm, idanzahl, alleidsorig, alledokumenteorig, czit
+    else:
+        return alleidsnorm, alledokumentenorm, idanzahl, alleidsorig, alledokumenteorig
 
 
 '''
@@ -228,7 +269,7 @@ def vektorenberechnen (bi_model:SentenceTransformer, modell:str, alledokumenteno
 '''
     4. Suche
 '''
-def suche_absatz (alleidsnorm:list, alleidsorig:list, alledokumenteorig:list, idanzahl:list, absatznummer:int, getid:bool = False):
+def suche_absatz (alleidsnorm:list, alleidsorig:list, alledokumenteorig:list, idanzahl:list, absatznummer:int, getid:bool = False, zitmapping:dict = None):
     """
         Gibt den Absatz entsprechend der Id zurück, basierend auf mapping wird zum nächsten Text gesprungen
         Input: 
@@ -253,19 +294,27 @@ def suche_absatz (alleidsnorm:list, alleidsorig:list, alledokumenteorig:list, id
             break
     # ID speichern
     sid = alleidsnorm[band][absatznummer]
-    print("Die ID ddes gesuchten Absatzes lautet: " + str(sid))
+    print("Die ID des gesuchten Absatzes lautet: " + str(sid))
+    if zitmapping:
+        link = "https://korpora.org/kant/aa0" + str(band+1) + "/" + zitmapping[band][sid] + ".html"
 
     # Rückgabe des Absatzes in der originalen Absatzliste entsprechend der ID
     try:
         if getid:
-            return alledokumenteorig[band][alleidsorig[band].index(str(sid))], sid
+            if zitmapping:
+                return alledokumenteorig[band][alleidsorig[band].index(str(sid))], sid, link
+            else:
+                return alledokumenteorig[band][alleidsorig[band].index(str(sid))], sid
         else:
-            return alledokumenteorig[band][alleidsorig[band].index(str(sid))]
+            if zitmapping:
+                return alledokumenteorig[band][alleidsorig[band].index(str(sid))], link
+            else:
+                return alledokumenteorig[band][alleidsorig[band].index(str(sid))]
     except:
         return False
 
 
-def suche (bi_model:SentenceTransformer, modell:str, features_docs:np.ndarray, alleidsnorm:list, alleidsorig:list, alledokumenteorig:list, idanzahl:list, suchergebnisanzahl:int = 10):
+def suche (bi_model:SentenceTransformer, modell:str, features_docs:np.ndarray, alleidsnorm:list, alleidsorig:list, alledokumenteorig:list, idanzahl:list, suchergebnisanzahl:int = 10, zitmapping:dict = None):
     """
         Suche in der Konsole
         Input: 
@@ -303,10 +352,15 @@ def suche (bi_model:SentenceTransformer, modell:str, features_docs:np.ndarray, a
             print("Query:", query)
             for j, r in enumerate(ranking[:suchergebnisanzahl]):
                 # Absatz erhalten
-                abs = suche_absatz(alleidsnorm, alleidsorig, alledokumenteorig, idanzahl, r)
+                if zitmapping:
+                    abs, link = suche_absatz(alleidsnorm, alleidsorig, alledokumenteorig, idanzahl, r, zitmapping=zitmapping)
+                else:
+                    abs = suche_absatz(alleidsnorm, alleidsorig, alledokumenteorig, idanzahl, r, zitmapping=zitmapping)
                 if not abs == False:
                     print(f"[Übereinstimmung zu Ergebnis {j+1}: {sim[i, r]: .3f}]")
                     print(abs)
+                    if zitmapping:
+                        print("Der resultierende Link des gesuchten Absatzes lautet: " + link)
                     print()
                 else:
                     print("Es gab ein Problem mit Ergebnis " + str(j+1) + "!")

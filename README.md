@@ -224,6 +224,8 @@ Mittels *bereite_daten()* werden diese Dateien eingelesen und Listen erstellt:
 - ID-Anzahlliste, die angibt, wie viele Ids in einem Band (normalisiert) vorkommen.
 Solange die Ids zweifelsfrei zugeordnet werden können, ist es in Ordnung, wenn für die normalisierten Listen weniger Absätze einbezogen werden. Es können hier also Absätze aussortiert werden. Absatz- und Id-Liste müssen aber immer übereinstimmen in ihrer Form und Reihenfolge.
 
+Zusätzlich werden noch Mappinglisten erstellt (eine pro Band), die von der AbsatzID auf die Seitenangabe in dem zugrundeliegenden Text rückschließen lassen. Mithilfe von Band und Seitenangabe ist es möglich auf der Webseite von korpora.org auf die entsprechende Textstelle im Gesamtkorpus zu verweisen.
+
 </details>
 
 <details>
