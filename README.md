@@ -2,8 +2,7 @@
 Source Code für das das Masterarbeitsprojekt einer semantischen Suche für das Gesamtwerk von Immanuel Kant. Das Projekt basiert auf der [online Ausgabe des Gesamtwerks von Immanuel Kant](http://kant.korpora.org). Vielen Dank für die Bereitstellung der Daten!
 
 Die Webseite mit der implementierten Suche ist unter folgendem Link zu finden:
-[Link](http://www.in-medias-res.wagnerhof.net) (Momentan leider offline)
-[temporärer Link](https://in-medias-res.honig-wagner.eu)
+[in-medias-res.wagnerhof.net](https://in-medias-res.wagnerhof.net)
 
 ---
 
