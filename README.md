@@ -11,7 +11,7 @@ Enthalten sind:
 
 - **[Inhalte des Repositoriums](#aufbau-des-repositoriums)**: Dateien zur Modellerstellung und Datenverarbeitung
 - **[HowTo](#howto)**: Erklärung, wie das Repositorium genutzt werden kann und wie die unten genannten Ergebnisse erzielt wurden
-- **[Ergebnisse](#ergebnisse)**: Ergebnisse, wie gut/schlecht die Modelle abschneiden
+- **[Auswertung](#auswertung)**: Ergebnisse, wie gut/schlecht die Modelle abschneiden
 - **[Trivia](#trivia)**: Sonstige Informationen
 
 
@@ -50,11 +50,15 @@ Es wurden folgende Modelle lokal installiert:
 
 ### Skripte
 
+- ***Anwendung_functions.py***: Funktionen, die für die Anwendung benötigt werden.
+- ***Anwendung.py***: Test der Modelle und Erstellung der Vektoren zu dem in Textprozess vorbereiteten Korpus.
+- ***Auswertung_functions.py***: Funktionen, die für die Auswertung benötigt werden.
+- ***Auswertung.py***: Skript zur Teilautomatisierten Gesamtauswertung des Korpus.
+- ***Teilauswertung.py***: Auswertung von Anteilen der in Gesamtauswertung enthaltenen Eingaben.
 - ***Textprozess_Kant.py***: Vorbereitung des Kantkorpus.
 - ***Textprozess_functions.py***: Funktionen, die für die Vorbereitung benötigt werden.
 - ***Trainingspipeline.py***: Pipeline, die das gesamte Training managed.
 - ***Training_functions.py***: Funktionen, die für das Training benötigt werden.
-- ***Vektoren-Test.py***: Test der Modelle und Erstellung der Vektoren zu dem in Textprozess vorbereiteten Korpus.
 
 
 ---
