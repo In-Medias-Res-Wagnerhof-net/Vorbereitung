@@ -23,14 +23,18 @@ Dateien mit Daten und Skripten zum Training und Vorbereiten der Daten.
 
 - **Daten**: Daten die nötig sind für die Suche. ! Kantkorpus wird (vorerst) nicht geteilt
 - **Modelle**: NLP-Modelle
-- **Skripte**: Skripte zur Vor- und Verarbeitung der Daten
+- **Skripte**: Skripte zur Vor- und Nachbereitung sowie Verarbeitung der Daten
 
 
 ### Daten
 
+#### Auswertungsdaten
+
+Die Ergebnisse der Auswertung. Nähere Beschreibung dazu unter [Auswertung](#auswertung).
+
 #### Kantkorpus
 
-Vorerst nicht geteilt.
+Aus Lizenzrechtlichen Gründen können die Daten nicht veröffentlicht werden, jedoch bei den [Rechteinhabern](http://kant.korpora.org) angefragt werden.
 
 #### Vektoren
 
@@ -57,7 +61,7 @@ Es wurden folgende Modelle lokal installiert:
 
 ## HowTo
 
-Dieses HowTo richtet sich vor allem an Neulinge der Natürlichen Sprachverarbeitung. Für Fortgeschrittenere ist wohl eher die [Auswertung](#ergebnisse) der Ergebnisse relevant, bzw. wie das Verfahren Implementiert wurde. Auf Feinheiten der Implementierung kann aufgrund des Platzes nicht in vollem Umfang eingegangen werden. Dazu gibt es auf der Webseite weitere Informationen.
+Dieses HowTo richtet sich vor allem an Neulinge der Natürlichen Sprachverarbeitung. Für Fortgeschrittenere ist wohl eher die [Auswertung](#auswertung) der Ergebnisse relevant, bzw. wie das Verfahren Implementiert wurde. Auf Feinheiten der Implementierung kann aufgrund des Platzes nicht in vollem Umfang eingegangen werden. Dazu gibt es auf der Webseite weitere Informationen.
 
 
 ### Einführung
@@ -70,7 +74,7 @@ Je nach Vorhaben kann direkt zu den entsprechenden Kapiteln gesprungen werden:
 - **[Vorbereitung der Daten](#vorbereitung-der-daten)**: In dieser Sektion wird die hier durchgeführte Bereinigung der Daten und die Aufbereitung der drei notwendigen Formen der Daten aufgezeigt.
 - **[Training der Modelle](#training-der-modelle)**: Hier wird das (weitere) Training der Modelle implementiert.
 - **[Implementierung der Suche](#implementierung-der-suche)**: Hier ist der Quellcode um lokal eine Suche zu implementieren sowie die zugehörige Erklärung.
-- **[Auswertung der Modelle](#auswertung)**: Zuletzt gibt es noch eine implementierte Auswertung unter anderem mithilfe des [Mean Reciprocal Rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank).
+- **[Teilautomatisierte Auswertung der Modelle](#teilautomatisierte-auswertung)**: Zuletzt gibt es noch eine implementierte Auswertung unter anderem mithilfe des [Mean Reciprocal Rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank).
 
 ### Programmierumgebung einrichten
 
@@ -242,9 +246,8 @@ Zuletzt werden die Listen und die Vektoren mit einer Eingabe in Verbindung geset
 
 </details>
 
----
 
-## Teilautomatisierte Auswertung
+### Teilautomatisierte Auswertung
 
 Für die Auswertung der Modelle gibt es zwei Verfahren: den [Mean Reciprocal Rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) (MRR) und den des gewichteten MRR (gMRR). Bei zweiterem werden die Ergebnisse nicht nur in Treffer und nicht Treffer unterteilt, sondern eine weitere Bewertung der Ergebnisse durchgeführt, um so auch Abschnitte einzubeziehen, die zwar kein perfekter Treffer sind, aber dennoch relevante oder spannende Informationen beinhalten. Dies geschieht mittels *Auswertung.py* und *Auswertung_functions.py*. Für beide Auswertungen muss eine **manuelle Bewertung** durchgeführt werden.
 
@@ -282,6 +285,13 @@ Die Bewertung muss also in die dritte Spalte hinter ID und Abschnitttext geschri
 <summary>Schritt 3: Auswertung</summary>
 
 Nachdem die Bewertung erfolgt ist, werden die Dateien eingelesen und in Zusammenhang gestellt. Entscheidend ist dabei die ID, sowie die Frage und die Position. Aus diesen drei Faktoren zieht das Programm die Bewertung und den Rang und Kann so für jede Frage einen Wert ermitteln, deren Mittelwert dann den MRR/gMRR darstellt. Alle Werte werden nun pro Modell in eine Tabelle geschrieben. Es werden auch die Werte pro Frage gespeichert, sodass eine Mittelwertberechnung von nur bestimmten Fragen vereinfacht wird (Hierzu müssen nur die Werte der Fragen aufaddiert und durch die Anzahl dieser Frage geteilt werden). MRR und gMRR befinden sich in der untersten Zeile.
+
+</details>
+
+<details>
+<summary>Schritt 4: automatisierte Teilauswertung</summary>
+
+Nachdem die vollständige und allgemeine Auswertung erfolgt ist, kann die Betrachtung von Teilwerten relevant sein um zum Beispiel zu erforschen, welche Kriterien besonders zielführende Sucheingaben erfüllen. Dazu kann das Skript *Teilauswertung.py* genutzt werden. Es wird zusätzlich eine Liste an Eingaben benötigt, die in der Gesamtauswertung bereits vorkamen sowie die Auswertungsdateien der Gesamtauswertung. Da bei der Gesamtauswertung die Teilergebnisse zu jeder Eingabe mitgespeichert werden kann auf diese zurückgegriffen werden. Es wird also der Mittelwert aus diesen Teilergebnissen berechnet.
 
 </details>
 
@@ -378,6 +388,9 @@ Auswertung:
     - numpy
     - Textprozess_functions
     - Anwendung_functions
+- Teilauswertung.py:
+    - csv
+    - Auswertung_functions
 
 </details>
 
@@ -392,5 +405,5 @@ Kantkorpus und Modelle (wegen der Größe) werden (vorerst) nicht übertragen.
 
 ### TODO
 
-- Zitationsvorschlag erstellen
+- Zitationsvorschlag dokumentieren
 - requirements.txt 

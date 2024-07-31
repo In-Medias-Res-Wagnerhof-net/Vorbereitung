@@ -125,10 +125,12 @@ def erstelle_zitmapping (band:int, pfad:str = "Vorbereitung/Daten/Kant/mapping",
     """
         Speichert Mapping von ID zu Seitenzahl
         Input: 
+            band:   Integer,    Angabe, um welchen Band es sich handelt
+            pfad:   String,     Speicherpfad für Mapping (ohne Bandnummer)
             data:   bs4,        Beautiful Soup Element der zu Grunde liegenden Datei 
                                 ! zu bearbeitende Textstellen sollten bereits mit id-tag ausgezeichnet sein und pb Element mit Seitenzahl haben
         Output:
-            str,   mapping
+            str,   Mapping von ID zu Seiten- und Buchangaben
     """
     # Testen ob Datei existiert
     try:
@@ -159,6 +161,7 @@ def bereite_daten (bandanzahl:int = 10, modell:str = None, low:bool = None, zit:
             bandanzahl: Integer,    Anzahl der zu durchsuchenden Bände
             modell:     String,     Modellkürzel
             low:        Boolean,    Angabe, ob mit .lower() Text verändert werden soll
+            zit:        Boolean,    Angabe, ob Mapping von ID auf Buch miterstellt werden soll
         Output:
             list,   ID-Liste der normalisierten Datei
             list,   Absatzliste der normalisierten Datei
@@ -278,6 +281,8 @@ def suche_absatz (alleidsnorm:list, alleidsorig:list, alledokumenteorig:list, id
             alledokumenteorig:  Liste,      Liste der Absätze, basierend auf den originalen Absätzen
             idanzahl:           Liste,      Gesamtanzahl an Ids je Band (basierend auf der normalisierten Datei)
             absatznummer:       Integer,    Indize des Absatzes in fortlaufender Form (ohne Bandzusatz)
+            getid:              Boolean,    Angabe, ob SID mitgeliefert werden soll
+            zitmapping:         Dictionary, Mapping von der ID auf Buch
         Output:
             String, Absatz der zu entsprechender ID zugehörig ist
                     ! Falls kein Absatz gefunden werden kann wird false zurückgegeben
@@ -326,6 +331,7 @@ def suche (bi_model:SentenceTransformer, modell:str, features_docs:np.ndarray, a
             alledokumenteorig:  Liste,                  Liste der Absätze, basierend auf den originalen Absätzen
             idanzahl:           Liste,                  Gesamtanzahl an Ids je Band (basierend auf der normalisierten Datei)
             suchergebnisanzahl: Integer,                Anzahl der angezeigten Suchergebnisse
+            zitmapping:         Dictionary,             Mapping von der ID auf Buch
     """
     # Abfrage einer Suchabfrage
     print("Bitte geben Sie einen Suchbegriff ein oder beenden Sie mit 'exit'!")
