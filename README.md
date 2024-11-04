@@ -20,8 +20,8 @@ Enthalten sind:
 
 Dateien mit Daten und Skripten zum Training und Vorbereiten der Daten.
 
-- **Daten**: Daten die nötig sind für die Suche. ! Kantkorpus wird (vorerst) nicht geteilt
-- **Modelle**: NLP-Modelle
+- **Daten**: Daten die nötig sind für die Suche. ! Kantkorpus wird nicht geteilt
+- **Modelle**: NLP-Modelle ! Modelle werden nicht geteilt
 - **Skripte**: Skripte zur Vor- und Nachbereitung sowie Verarbeitung der Daten
 
 
@@ -294,7 +294,7 @@ Nachdem die Bewertung erfolgt ist, werden die Dateien eingelesen und in Zusammen
 <details>
 <summary>Schritt 4: automatisierte Teilauswertung</summary>
 
-Nachdem die vollständige und allgemeine Auswertung erfolgt ist, kann die Betrachtung von Teilwerten relevant sein um zum Beispiel zu erforschen, welche Kriterien besonders zielführende Sucheingaben erfüllen. Dazu kann das Skript *Teilauswertung.py* genutzt werden. Es wird zusätzlich eine Liste an Eingaben benötigt, die in der Gesamtauswertung bereits vorkamen sowie die Auswertungsdateien der Gesamtauswertung. Da bei der Gesamtauswertung die Teilergebnisse zu jeder Eingabe mitgespeichert werden kann auf diese zurückgegriffen werden. Es wird also der Mittelwert aus diesen Teilergebnissen berechnet.
+Nachdem die vollständige und allgemeine Auswertung erfolgt ist, kann die Betrachtung von Teilwerten relevant sein, um zum Beispiel zu erforschen, welche Kriterien besonders zielführende Sucheingaben erfüllen. Dazu kann das Skript *Teilauswertung.py* genutzt werden. Es wird zusätzlich eine Liste an Eingaben benötigt, die in der Gesamtauswertung bereits vorkamen sowie die Auswertungsdateien der Gesamtauswertung. Da bei der Gesamtauswertung die Teilergebnisse zu jeder Eingabe mitgespeichert werden, kann auf diese zurückgegriffen werden. Es wird also der Mittelwert aus diesen Teilergebnissen berechnet.
 
 </details>
 
@@ -340,6 +340,8 @@ Außerdem die Auswertung in zusammengefasster Tabellenform:
 | **Distilbert** 	| 0,00000 \|   0,00545  |  0,00416 \| 0,00938 |    0,12153 \| 0,13133  |    -    \|     -    	|      -    \|     -     |     -    \|     -    |
 |    **Converb** 	| 0,00000 \|   0,00085  |  0,00000 \| 0,00333 |    0,00521 \| 0,00628  |    -    \|     -    	|      -    \|     -     |     -    \|     -    |
 |   **Gelectra** 	| 0,00000 \|   0,00104  |  0,00417 \| 0,00886 |    0,00000 \| 0,00352  | 0,00000 \|  0,00090 	|   0,00000 \|  0,00330  |  0,06250 \|  0,06530 |
+
+Auswertung und Teilauswertungen finden sich graphisch aufbereitet auch auf der [Webseite](https://in-medias-res.wagnerhof.net/auswertung/) des Projektes.
 
 ## Trivia
 
@@ -408,5 +410,4 @@ Kantkorpus und Modelle (wegen der Größe) werden (vorerst) nicht übertragen.
 
 ### TODO
 
-- Zitationsvorschlag dokumentieren
-- requirements.txt 
+- requirements.txt

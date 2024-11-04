@@ -35,7 +35,7 @@ for modell in modelle.copy():
             modelle.append(modell + "-" + zusatz)
 
 pfadek = 'Vorbereitung/Daten/Auswertung/Auswertung-'
-pfadak = 'Vorbereitung/Daten/Auswertung/Teilauswertung_Worte'
+pfadak = 'Vorbereitung/Daten/Auswertung/Teilauswertung_mehrere-Worte'
 eingaben = erhalte_eingaben(pfadak + ".txt")
 
 
@@ -80,6 +80,6 @@ for i, modell in enumerate(modelle):
         for j, eingabe in enumerate(eingaben):
             row = {"MRR": einzel[i][j], 'gMRR': geinzel[i][j], "Frage": eingabe}
             writer.writerow(row)
-        row = {"MRR": mrrs[i], 'gMRR': gmrrs[i]}
+        row = {"MRR": mrrs[i], 'gMRR': gmrrs[i], "Frage":"Gesamt"}
         writer.writerow(row)
 

@@ -130,7 +130,8 @@ def erstelle_zitmapping (band:int, pfad:str = "Vorbereitung/Daten/Kant/mapping",
             data:   bs4,        Beautiful Soup Element der zu Grunde liegenden Datei 
                                 ! zu bearbeitende Textstellen sollten bereits mit id-tag ausgezeichnet sein und pb Element mit Seitenzahl haben
         Output:
-            str,   Mapping von ID zu Seiten- und Buchangaben
+            dict,   Mapping von ID zu Seiten- und Buchangaben; Form: {id: angaben}
+                ! None falls weder Datei noch Daten vorhanden
     """
     # Testen ob Datei existiert
     try:
@@ -148,7 +149,7 @@ def erstelle_zitmapping (band:int, pfad:str = "Vorbereitung/Daten/Kant/mapping",
         for i in ids:
             mapping[i] = p[:3]
 
-    with open(pfad+str(band), "wb") as fp:   #Pickling
+    with open(pfad+str(band), "wb") as fp:      # Pickling
         pickle.dump(mapping, fp)
         
     return mapping
@@ -168,6 +169,7 @@ def bereite_daten (bandanzahl:int = 10, modell:str = None, low:bool = None, zit:
             list,   Gesamtanzahl an Ids je Band (basierend auf der normalisierten Datei)
             list,   ID-Liste der originalen Datei
             list,   Absatzliste der originalen Datei
+            list,   [optional] Liste mit Zitationsmapping
     """
     # Initialisierung und gegebenenfalls low setzen
     alleidsnorm = []
@@ -285,6 +287,8 @@ def suche_absatz (alleidsnorm:list, alleidsorig:list, alledokumenteorig:list, id
             zitmapping:         Dictionary, Mapping von der ID auf Buch
         Output:
             String, Absatz der zu entsprechender ID zugehörig ist
+            String, [optional] entsprechende ID
+            String, [optional] Link zu korpora.org
                     ! Falls kein Absatz gefunden werden kann wird false zurückgegeben
     """
     # Bei Band eins beginnend hochzählen

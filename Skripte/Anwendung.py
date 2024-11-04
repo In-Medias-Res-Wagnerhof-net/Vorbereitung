@@ -36,12 +36,12 @@ if type(modelle) == str:
     try:
         open(pfad + "alleids")
     except:
-        with open(pfad + "alleids", "wb") as fp:   #Pickling
+        with open(pfad + "alleids", "wb") as fp:    # Pickling
             pickle.dump(alleidsnorm, fp)
     try:
         open(pfad + "idanzahl")
     except:
-        with open(pfad + "idanzahl", "wb") as fp:   #Pickling
+        with open(pfad + "idanzahl", "wb") as fp:   # Pickling
             pickle.dump(idanzahl, fp)
 
 
@@ -54,6 +54,7 @@ if type(modelle) == str:
 
     # Suche
     suche(bi_model, modelle, features_docs, alleidsnorm, alleidsorig, alledokumenteorig, idanzahl, suchergebnisanzahl, zitmapping=seitenangaben)
+
 
 elif type(modelle) == list:
     # Suchabfrage wiederholen, solange Modell existiert
